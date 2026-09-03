@@ -2,9 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerModule } from '@nestjs/throttler';
-import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,10 +29,6 @@ import { EventsModule } from './modules/events/events.module';
       database: process.env.DB_DATABASE || 'comments_db',
       entities: [User, Comment, RefreshToken],
       synchronize: true, // Auto-create tables in dev
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: path.resolve(process.env.UPLOAD_DIR || './uploads'),
-      serveRoot: '/uploads',
     }),
     ThrottlerModule.forRoot([
       {

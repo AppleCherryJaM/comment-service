@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
+import * as path from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -10,6 +12,10 @@ async function bootstrap() {
     origin: '*',
     credentials: true,
   });
+
+  // Serve static uploaded files at /uploads
+  const uploadDir = path.resolve(process.env.UPLOAD_DIR || './uploads');
+  app.use('/uploads', express.static(uploadDir));
 
   app.setGlobalPrefix('api');
 
