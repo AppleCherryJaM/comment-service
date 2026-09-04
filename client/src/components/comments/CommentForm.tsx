@@ -9,7 +9,7 @@ import { CommentPreviewModal } from './CommentPreviewModal';
 import type { Attachment, CreateCommentPayload } from '../../types';
 
 interface CommentFormProps {
-  parentCommentId?: number;
+  parentCommentId?: string;
   parentUsername?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -23,9 +23,9 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 }) => {
   const { user, isAuthenticated } = useAuth();
 
-  const [username, setUsername] = useState<string>(user?.username || '');
+  const [username, setUsername] = useState<string>(user?.name || user?.username || '');
   const [email, setEmail] = useState<string>(user?.email || '');
-  const [homePage, setHomePage] = useState<string>(user?.homePage || '');
+  const [homePage, setHomePage] = useState<string>(user?.home_page || user?.homePage || '');
   const [text, setText] = useState<string>('');
 
   const [captchaId, setCaptchaId] = useState<string>('');
@@ -40,6 +40,9 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const currentUserName = isAuthenticated ? (user?.name || user?.username || username) : username;
+  const currentUserEmail = isAuthenticated ? user!.email : email;
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -47,7 +50,6 @@ export const CommentForm: React.FC<CommentFormProps> = ({
     const file = files[0];
     const extension = file.name.split('.').pop()?.toLowerCase();
 
-    // Client-side file checks
     if (!['jpg', 'jpeg', 'png', 'gif', 'txt'].includes(extension || '')) {
       setFormError('Недопустимый формат файла! Разрешены: JPG, PNG, GIF, TXT.');
       return;
@@ -72,7 +74,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
     }
   };
 
-  const removeAttachment = (id: number) => {
+  const removeAttachment = (id: string) => {
     setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
@@ -80,14 +82,12 @@ export const CommentForm: React.FC<CommentFormProps> = ({
     e.preventDefault();
     setFormError('');
 
-    // Validate XHTML tags
     const xhtmlCheck = validateXHTML(text);
     if (!xhtmlCheck.isValid) {
       setFormError(xhtmlCheck.error || 'Ошибка в XHTML тегах.');
       return;
     }
 
-    // Validate Guest Captcha
     if (!isAuthenticated && (!captchaId || !captchaCode)) {
       setFormError('Пожалуйста, введите код с капчи.');
       return;
@@ -97,8 +97,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 
     try {
       const payload: CreateCommentPayload = {
-        username: isAuthenticated ? user!.username : username,
-        email: isAuthenticated ? user!.email : email,
+        userName: currentUserName,
+        email: currentUserEmail,
         homePage: homePage || undefined,
         text,
         parentCommentId,
@@ -109,7 +109,6 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 
       await commentsService.createComment(payload);
 
-      // Reset form
       setText('');
       setCaptchaCode('');
       setAttachments([]);
@@ -151,11 +150,13 @@ export const CommentForm: React.FC<CommentFormProps> = ({
           <input
             type="text"
             className="input-field"
-            placeholder="Иван Иванов"
-            value={isAuthenticated ? user!.username : username}
+            placeholder="ИванИванов (только латиница и цифры)"
+            value={currentUserName}
             onChange={(e) => setUsername(e.target.value)}
             disabled={isAuthenticated}
             required
+            pattern="[a-zA-Z0-9]+"
+            title="Только латинские буквы и цифры"
           />
         </div>
 
@@ -167,7 +168,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
             type="email"
             className="input-field"
             placeholder="name@example.com"
-            value={isAuthenticated ? user!.email : email}
+            value={currentUserEmail}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isAuthenticated}
             required
@@ -268,8 +269,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({
       <CommentPreviewModal
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
-        username={isAuthenticated ? user!.username : username}
-        email={isAuthenticated ? user!.email : email}
+        username={currentUserName}
+        email={currentUserEmail}
         text={text}
         attachments={attachments}
       />

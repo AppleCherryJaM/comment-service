@@ -2,9 +2,9 @@ import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Filter } from 'lucide-react';
 
 interface CommentSortHeaderProps {
-  sortBy: 'username' | 'email' | 'createdAt';
+  sortBy: 'user_name' | 'email' | 'created_at';
   sortOrder: 'ASC' | 'DESC';
-  onSortChange: (sortBy: 'username' | 'email' | 'createdAt', sortOrder: 'ASC' | 'DESC') => void;
+  onSortChange: (sortBy: 'user_name' | 'email' | 'created_at', sortOrder: 'ASC' | 'DESC') => void;
   totalComments: number;
 }
 
@@ -14,17 +14,15 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
   onSortChange,
   totalComments,
 }) => {
-  const handleSortClick = (field: 'username' | 'email' | 'createdAt') => {
+  const handleSortClick = (field: 'user_name' | 'email' | 'created_at') => {
     if (sortBy === field) {
-      // Toggle ASC/DESC
       onSortChange(field, sortOrder === 'ASC' ? 'DESC' : 'ASC');
     } else {
-      // Switch field, default to DESC for date, ASC for text
-      onSortChange(field, field === 'createdAt' ? 'DESC' : 'ASC');
+      onSortChange(field, field === 'created_at' ? 'DESC' : 'ASC');
     }
   };
 
-  const renderSortIcon = (field: 'username' | 'email' | 'createdAt') => {
+  const renderSortIcon = (field: 'user_name' | 'email' | 'created_at') => {
     if (sortBy !== field) {
       return <ArrowUpDown size={14} className="sort-icon-neutral" />;
     }
@@ -46,20 +44,20 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
         <span className="sort-label">Сортировка:</span>
         <button
           type="button"
-          className={`sort-pill ${sortBy === 'createdAt' ? 'active' : ''}`}
-          onClick={() => handleSortClick('createdAt')}
+          className={`sort-pill ${sortBy === 'created_at' ? 'active' : ''}`}
+          onClick={() => handleSortClick('created_at')}
         >
           <span>Дата добавления</span>
-          {renderSortIcon('createdAt')}
+          {renderSortIcon('created_at')}
         </button>
 
         <button
           type="button"
-          className={`sort-pill ${sortBy === 'username' ? 'active' : ''}`}
-          onClick={() => handleSortClick('username')}
+          className={`sort-pill ${sortBy === 'user_name' ? 'active' : ''}`}
+          onClick={() => handleSortClick('user_name')}
         >
           <span>Имя пользователя</span>
-          {renderSortIcon('username')}
+          {renderSortIcon('user_name')}
         </button>
 
         <button

@@ -9,6 +9,9 @@ export const Header: React.FC = () => {
   const { isConnected } = useSocket();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
+  const displayName = user?.name || user?.username || user?.email || 'Пользователь';
+  const initialLetter = displayName.charAt(0).toUpperCase();
+
   return (
     <header className="app-header">
       <div className="header-container">
@@ -33,12 +36,10 @@ export const Header: React.FC = () => {
           </div>
 
           {/* User Auth Section */}
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <div className="user-profile-badge">
-              <div className="user-avatar-circle">
-                {user!.username.charAt(0).toUpperCase()}
-              </div>
-              <span className="user-display-name">{user!.username}</span>
+              <div className="user-avatar-circle">{initialLetter}</div>
+              <span className="user-display-name">{displayName}</span>
               <button
                 type="button"
                 className="logout-btn"

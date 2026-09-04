@@ -11,7 +11,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { login, register } = useAuth();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
 
-  const [username, setUsername] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [homePage, setHomePage] = useState<string>('');
@@ -30,7 +30,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       if (activeTab === 'login') {
         await login({ email, password });
       } else {
-        await register({ username, email, password, homePage: homePage || undefined });
+        await register({ name, email, password, home_page: homePage || undefined });
       }
       onClose();
     } catch (err: any) {
@@ -89,10 +89,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <input
                   type="text"
                   className="input-field"
-                  placeholder="Иван Иванов"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="ИванИванов (только латиница и цифры)"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
+                  pattern="[a-zA-Z0-9]+"
+                  title="Только латинские буквы и цифры"
                 />
               </div>
             )}

@@ -1,13 +1,15 @@
 export interface User {
-  id: number;
-  username: string;
+  id: string;
+  name: string;
+  username?: string; // Fallback
   email: string;
-  homePage?: string;
-  avatarUrl?: string;
+  home_page?: string;
+  homePage?: string; // Fallback
+  created_at?: string;
 }
 
 export interface Attachment {
-  id: number;
+  id: string;
   fileName: string;
   fileUrl: string;
   fileType: 'image' | 'text';
@@ -15,18 +17,21 @@ export interface Attachment {
 }
 
 export interface Comment {
-  id: number;
-  username: string;
+  id: string;
+  user_name: string;
+  username?: string; // Fallback helper
   email: string;
-  homePage?: string;
+  home_page?: string;
+  homePage?: string; // Fallback helper
   text: string;
-  parentCommentId?: number | null;
-  rootCommentId?: number | null;
-  createdAt: string;
+  parent_comment_id?: string | null;
+  root_comment_id?: string | null;
+  created_at: string;
+  createdAt?: string; // Fallback helper
   user?: User | null;
   attachments?: Attachment[];
   replies?: Comment[];
-  repliesCount?: number;
+  replies_count?: number;
 }
 
 export interface PaginatedCommentsResponse {
@@ -40,7 +45,7 @@ export interface PaginatedCommentsResponse {
 export interface GetCommentsParams {
   page?: number;
   limit?: number;
-  sortBy?: 'username' | 'email' | 'createdAt';
+  sortBy?: 'user_name' | 'username' | 'email' | 'created_at' | 'createdAt';
   sortOrder?: 'ASC' | 'DESC';
 }
 
@@ -50,26 +55,27 @@ export interface CaptchaResponse {
 }
 
 export interface CreateCommentPayload {
-  username: string;
+  userName: string;
   email: string;
   homePage?: string;
   text: string;
-  parentCommentId?: number;
+  parentCommentId?: string;
   captchaId?: string;
   captchaCode?: string;
-  attachmentIds?: number[];
+  attachmentIds?: string[];
 }
 
 export interface AuthResponse {
   accessToken: string;
+  refreshToken?: string;
   user: User;
 }
 
 export interface RegisterPayload {
-  username: string;
+  name: string;
   email: string;
   password: string;
-  homePage?: string;
+  home_page?: string;
 }
 
 export interface LoginPayload {

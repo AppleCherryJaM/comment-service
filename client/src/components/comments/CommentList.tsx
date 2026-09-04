@@ -14,7 +14,7 @@ export const CommentList: React.FC = () => {
   const [commentsData, setCommentsData] = useState<PaginatedCommentsResponse | null>(null);
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(25);
-  const [sortBy, setSortBy] = useState<'username' | 'email' | 'createdAt'>('createdAt');
+  const [sortBy, setSortBy] = useState<'user_name' | 'email' | 'created_at'>('created_at');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -42,7 +42,7 @@ export const CommentList: React.FC = () => {
   }, [page, sortBy, sortOrder]);
 
   const handleSortChange = (
-    newSortBy: 'username' | 'email' | 'createdAt',
+    newSortBy: 'user_name' | 'email' | 'created_at',
     newSortOrder: 'ASC' | 'DESC'
   ) => {
     setSortBy(newSortBy);
@@ -55,6 +55,8 @@ export const CommentList: React.FC = () => {
     fetchComments();
   };
 
+  const notificationUsername = newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
+
   return (
     <div className="comments-main-section">
       {/* Toast Notification Banner for Real-time WebSockets */}
@@ -63,7 +65,7 @@ export const CommentList: React.FC = () => {
           <div className="toast-content">
             <Bell size={18} className="toast-bell" />
             <span>
-              Поступил новый комментарий от <strong>{newCommentNotification.username}</strong>!
+              Поступил новый комментарий от <strong>{notificationUsername}</strong>!
             </span>
           </div>
           <button type="button" className="btn btn-sm btn-primary">
