@@ -1,56 +1,6 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
-  @include flex-center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal {
-  background: #ffffff;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-lg;
-  width: 100%;
-  max-width: 540px;
-  box-shadow: $shadow-lg;
-  overflow: hidden;
-}
-
-.header {
-  @include flex-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid $border-subtle;
-
-  h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: $text-main;
-  }
-
-  .closeBtn {
-    background: none;
-    border: none;
-    color: $text-faint;
-    cursor: pointer;
-    display: flex;
-    padding: 2px;
-    border-radius: 4px;
-
-    &:hover {
-      color: $text-main;
-    }
-  }
-}
-
-.body {
-  padding: 1.25rem;
-}
-
 .alert {
   display: flex;
   align-items: center;
@@ -174,16 +124,8 @@
   color: $text-muted;
 }
 
-.footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.85rem 1.25rem;
-  border-top: 1px solid $border-subtle;
-  background: $bg-subtle;
-
-  .closeBtnSecondary {
-    @include btn-secondary;
-    padding: 0.45rem 1rem;
-    font-size: 0.85rem;
-  }
+.closeBtnSecondary {
+  @include btn-secondary;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
 }

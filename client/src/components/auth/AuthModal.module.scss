@@ -1,100 +1,125 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
-  @include flex-center;
-  z-index: 1000;
-  padding: 1rem;
+.authCard {
+  display: flex;
+  flex-direction: column;
 }
 
-.modal {
-  background: #ffffff;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-lg;
-  width: 100%;
-  max-width: 440px;
-  box-shadow: $shadow-lg;
-  overflow: hidden;
-}
+.brandHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1rem;
 
-.header {
-  @include flex-between;
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid $border-subtle;
-
-  .closeBtn {
-    background: none;
-    border: none;
-    color: $text-faint;
-    cursor: pointer;
-    display: flex;
-    padding: 2px;
-    border-radius: 4px;
+  .brandLogo {
+    width: 68px;
+    height: 68px;
+    border-radius: 16px;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid $border-subtle;
+    padding: 4px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+    margin-bottom: 0.75rem;
+    transition: transform 0.2s ease;
 
     &:hover {
-      color: $text-main;
+      transform: scale(1.03);
     }
+  }
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: $text-main;
+    line-height: 1.25;
+  }
+
+  .subtitle {
+    font-size: 0.82rem;
+    color: $text-muted;
+    margin-top: 0.25rem;
   }
 }
 
-.tabs {
-  display: flex;
-  gap: 1rem;
-}
-
-.tab {
-  background: none;
-  border: none;
-  color: $text-faint;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding-bottom: 0.35rem;
-  border-bottom: 2px solid transparent;
+.benefitBadge {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
+  background: rgba($primary, 0.07);
+  border: 1px solid rgba($primary, 0.18);
+  border-radius: $radius-full;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $primary;
+  margin-bottom: 1rem;
+  user-select: none;
+}
+
+.segmentedControl {
+  display: flex;
+  background: $bg-subtle;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  padding: 3px;
+  margin-bottom: 1.1rem;
+  gap: 3px;
+}
+
+.segmentedTab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  padding: 0.42rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $text-muted;
+  cursor: pointer;
   transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
 
   &:hover {
     color: $text-main;
   }
 
   &.active {
+    background: #ffffff;
     color: $primary;
-    border-bottom-color: $primary;
+    font-weight: 600;
+    box-shadow: $shadow-xs;
   }
-}
-
-.body {
-  padding: 1.25rem;
 }
 
 .errorAlert {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   background: rgba($danger, 0.08);
   color: $danger;
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.75rem;
   border-radius: $radius-sm;
   font-size: 0.8rem;
-  margin-bottom: 0.85rem;
+  margin-bottom: 1rem;
 }
 
 .formGroup {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.9rem;
 }
 
 .label {
   font-size: 0.78rem;
   font-weight: 600;
   color: $text-muted;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
   display: block;
 
   .required {
@@ -102,27 +127,84 @@
   }
 }
 
-.input {
-  @include input-field;
-}
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 
-.footer {
-  @include flex-between;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.85rem 1.25rem;
-  border-top: 1px solid $border-subtle;
-  background: $bg-subtle;
-
-  .cancelBtn {
-    @include btn-secondary;
-    padding: 0.42rem 0.9rem;
-    font-size: 0.85rem;
+  .inputIcon {
+    position: absolute;
+    left: 0.75rem;
+    color: $text-faint;
+    pointer-events: none;
+    transition: color 0.15s;
   }
 
-  .submitBtn {
-    @include btn-primary;
-    padding: 0.42rem 1rem;
-    font-size: 0.85rem;
+  .input {
+    @include input-field;
+    padding-left: 2.35rem;
+    padding-right: 0.75rem;
+    height: 38px;
+    font-size: 0.86rem;
+
+    &.hasRightAction {
+      padding-right: 2.35rem;
+    }
+  }
+
+  &:focus-within .inputIcon {
+    color: $primary;
+  }
+
+  .eyeBtn {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: $text-faint;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 3px;
+    transition: color 0.15s;
+
+    &:hover {
+      color: $text-main;
+    }
+  }
+}
+
+.submitFullBtn {
+  width: 100%;
+  @include btn-primary;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  border-radius: $radius-sm;
+  margin-top: 1.15rem;
+  box-shadow: 0 2px 5px rgba($primary, 0.28);
+  gap: 0.45rem;
+}
+
+.switchFooter {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: $text-muted;
+
+  .switchLink {
+    background: none;
+    border: none;
+    color: $primary;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 0.35rem;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
