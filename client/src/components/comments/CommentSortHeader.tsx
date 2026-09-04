@@ -2,9 +2,9 @@ import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Filter } from 'lucide-react';
 
 interface CommentSortHeaderProps {
-  sortBy: 'user_name' | 'email' | 'created_at';
+  sortBy: 'name' | 'email' | 'created_at';
   sortOrder: 'ASC' | 'DESC';
-  onSortChange: (sortBy: 'user_name' | 'email' | 'created_at', sortOrder: 'ASC' | 'DESC') => void;
+  onSortChange: (sortBy: 'name' | 'email' | 'created_at', sortOrder: 'ASC' | 'DESC') => void;
   totalComments: number;
 }
 
@@ -14,7 +14,7 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
   onSortChange,
   totalComments,
 }) => {
-  const handleSortClick = (field: 'user_name' | 'email' | 'created_at') => {
+  const handleSortClick = (field: 'name' | 'email' | 'created_at') => {
     if (sortBy === field) {
       onSortChange(field, sortOrder === 'ASC' ? 'DESC' : 'ASC');
     } else {
@@ -22,7 +22,7 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
     }
   };
 
-  const renderSortIcon = (field: 'user_name' | 'email' | 'created_at') => {
+  const renderSortIcon = (field: 'name' | 'email' | 'created_at') => {
     if (sortBy !== field) {
       return <ArrowUpDown size={14} className="sort-icon-neutral" />;
     }
@@ -53,11 +53,11 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
 
         <button
           type="button"
-          className={`sort-pill ${sortBy === 'user_name' ? 'active' : ''}`}
-          onClick={() => handleSortClick('user_name')}
+          className={`sort-pill ${sortBy === 'name' ? 'active' : ''}`}
+          onClick={() => handleSortClick('name')}
         >
           <span>Имя пользователя</span>
-          {renderSortIcon('user_name')}
+          {renderSortIcon('name')}
         </button>
 
         <button
