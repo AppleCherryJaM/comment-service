@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, LogIn, LogOut, Wifi, WifiOff } from 'lucide-react';
+import { LogIn, LogOut, Wifi, WifiOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { AuthModal } from '../auth/AuthModal';
@@ -16,9 +16,11 @@ export const Header: React.FC = () => {
     <header className="app-header">
       <div className="header-container">
         <div className="brand-block">
-          <div className="brand-logo">
-            <MessageSquare size={22} />
-          </div>
+          <img
+            src="/cta_logo_badge_dark.svg"
+            alt="CTA Logo"
+            className="brand-logo-img"
+          />
           <div className="brand-info">
             <h1 className="brand-title">Dzencode Comments</h1>
             <span className="brand-subtitle">SPA Комментарии с каскадным деревом</span>

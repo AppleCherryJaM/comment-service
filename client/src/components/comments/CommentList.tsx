@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshCw, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
 import { commentsService } from '../../services/commentsService';
 import { useSocket } from '../../context/SocketContext';
@@ -14,13 +14,13 @@ export const CommentList: React.FC = () => {
   const [commentsData, setCommentsData] = useState<PaginatedCommentsResponse | null>(null);
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(25);
-  const [sortBy, setSortBy] = useState<'user_name' | 'email' | 'created_at'>('created_at');
+  const [sortBy, setSortBy] = useState<'name' | 'email' | 'created_at'>('created_at');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeAttachment, setActiveAttachment] = useState<Attachment | null>(null);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await commentsService.getComments({
@@ -32,17 +32,18 @@ export const CommentList: React.FC = () => {
       setCommentsData(data);
     } catch (err) {
       console.error('Failed to fetch comments', err);
+      setCommentsData({ data: [], total: 0, page: 1, limit: 25, totalPages: 0 });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, limit, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchComments();
-  }, [page, sortBy, sortOrder]);
+  }, [fetchComments]);
 
   const handleSortChange = (
-    newSortBy: 'user_name' | 'email' | 'created_at',
+    newSortBy: 'name' | 'email' | 'created_at',
     newSortOrder: 'ASC' | 'DESC'
   ) => {
     setSortBy(newSortBy);
@@ -55,7 +56,11 @@ export const CommentList: React.FC = () => {
     fetchComments();
   };
 
-  const notificationUsername = newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
+  const commentsList = commentsData?.data ?? [];
+  const totalComments = commentsData?.total ?? commentsData?.meta?.total ?? 0;
+  const totalPages = commentsData?.totalPages ?? commentsData?.meta?.totalPages ?? 0;
+  const notificationUsername =
+    newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
 
   return (
     <div className="comments-main-section">
@@ -86,7 +91,7 @@ export const CommentList: React.FC = () => {
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
-          totalComments={commentsData?.total || 0}
+          totalComments={totalComments}
         />
 
         {isLoading ? (
@@ -95,13 +100,13 @@ export const CommentList: React.FC = () => {
             <div className="skeleton-card" />
             <div className="skeleton-card" />
           </div>
-        ) : !commentsData || commentsData.data.length === 0 ? (
+        ) : commentsList.length === 0 ? (
           <div className="empty-comments-box">
             <p>Пока нет главных комментариев. Будьте первыми!</p>
           </div>
         ) : (
           <div className="comments-list-stack">
-            {commentsData.data.map((comment) => (
+            {commentsList.map((comment) => (
               <CommentItem
                 key={comment.id}
                 comment={comment}
@@ -113,19 +118,19 @@ export const CommentList: React.FC = () => {
         )}
 
         {/* Pagination Bar */}
-        {commentsData && commentsData.totalPages > 1 && (
+        {totalPages > 1 && (
           <div className="pagination-bar">
             <button
               type="button"
               className="page-btn"
               disabled={page === 1}
-              onClick={() => setPage(page - 1)}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               <ChevronLeft size={16} /> Назад
             </button>
 
             <div className="page-numbers">
-              {Array.from({ length: commentsData.totalPages }, (_, i) => i + 1).map((p) => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
                   type="button"
@@ -140,8 +145,8 @@ export const CommentList: React.FC = () => {
             <button
               type="button"
               className="page-btn"
-              disabled={page === commentsData.totalPages}
-              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
               Вперёд <ChevronRight size={16} />
             </button>
