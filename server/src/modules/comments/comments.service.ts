@@ -35,15 +35,29 @@ export class CommentsService {
     private readonly attachmentsService: AttachmentsService,
     private readonly commentsGateway: CommentsGateway,
   ) {
+    const isDev = process.env.NODE_ENV === 'development';
+
     this.redis = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: Number(process.env.REDIS_PORT) || 6379,
       maxRetriesPerRequest: 1,
       lazyConnect: true,
+      enableOfflineQueue: false,
+      retryStrategy: isDev
+        ? () => null
+        : (times) => Math.min(times * 100, 3000),
     });
 
+    let hasLogged = false;
     this.redis.on('error', (err) => {
-      console.warn('⚠️ [Redis Comments Warning]:', err.message);
+      if (!isDev) {
+        console.warn('⚠️ [Redis Comments Warning]:', err.message);
+      } else if (!hasLogged) {
+        hasLogged = true;
+        console.log(
+          'ℹ️ [Redis Comments]: Dev mode — Redis offline, caching disabled.',
+        );
+      }
     });
   }
 
