@@ -3,7 +3,7 @@ import { Send, Paperclip, X, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { commentsService } from '../../services/commentsService';
 import { validateXHTML } from '../../utils/xhtmlValidator';
-import { CaptchaWidget } from '../captcha/CaptchaWidget';
+import { CaptchaModal } from '../captcha/CaptchaModal';
 import { CommentToolbar } from './CommentToolbar';
 import { CommentPreviewModal } from './CommentPreviewModal';
 import type { Attachment, CreateCommentPayload } from '../../types';
@@ -29,8 +29,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
   const [homePage, setHomePage] = useState<string>(user?.home_page || user?.homePage || '');
   const [text, setText] = useState<string>('');
 
-  const [captchaId, setCaptchaId] = useState<string>('');
-  const [captchaCode, setCaptchaCode] = useState<string>('');
+  const [isCaptchaModalOpen, setIsCaptchaModalOpen] = useState<boolean>(false);
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -79,23 +78,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({
     setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-
-    const xhtmlCheck = validateXHTML(text);
-    if (!xhtmlCheck.isValid) {
-      setFormError(xhtmlCheck.error || 'Ошибка в XHTML тегах.');
-      return;
-    }
-
-    if (!isAuthenticated && (!captchaId || !captchaCode)) {
-      setFormError('Введите проверочный код с капчи.');
-      return;
-    }
-
+  const sendComment = async (captchaId?: string, captchaCode?: string) => {
     setIsSubmitting(true);
-
     try {
       const payload: CreateCommentPayload = {
         userName: currentUserName,
@@ -111,16 +95,44 @@ export const CommentForm: React.FC<CommentFormProps> = ({
       await commentsService.createComment(payload);
 
       setText('');
-      setCaptchaCode('');
       setAttachments([]);
+      setIsCaptchaModalOpen(false);
 
       if (onSuccess) onSuccess();
     } catch (err: any) {
       const msg = err.response?.data?.message;
-      setFormError(Array.isArray(msg) ? msg.join(', ') : msg || 'Ошибка отправки комментария.');
+      const errorText = Array.isArray(msg) ? msg.join(', ') : msg || 'Ошибка отправки комментария.';
+      setFormError(errorText);
+      throw err;
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+
+    const xhtmlCheck = validateXHTML(text);
+    if (!xhtmlCheck.isValid) {
+      setFormError(xhtmlCheck.error || 'Ошибка в XHTML тегах.');
+      return;
+    }
+
+    if (!isAuthenticated) {
+      if (!currentUserName.trim()) {
+        setFormError('Укажите имя пользователя.');
+        return;
+      }
+      if (!currentUserEmail.trim()) {
+        setFormError('Укажите email.');
+        return;
+      }
+      setIsCaptchaModalOpen(true);
+      return;
+    }
+
+    await sendComment();
   };
 
   return (
@@ -223,16 +235,6 @@ export const CommentForm: React.FC<CommentFormProps> = ({
           </div>
 
           <div className={styles.bottomRight}>
-            {!isAuthenticated && (
-              <CaptchaWidget
-                captchaCode={captchaCode}
-                onCaptchaChange={(id, code) => {
-                  setCaptchaId(id);
-                  setCaptchaCode(code);
-                }}
-              />
-            )}
-
             <button
               type="submit"
               className={styles.submitBtn}
@@ -253,6 +255,16 @@ export const CommentForm: React.FC<CommentFormProps> = ({
         email={currentUserEmail}
         text={text}
         attachments={attachments}
+      />
+
+      {/* Security Captcha Modal for Guests */}
+      <CaptchaModal
+        isOpen={isCaptchaModalOpen}
+        onClose={() => setIsCaptchaModalOpen(false)}
+        onConfirm={async (captchaId, captchaCode) => {
+          await sendComment(captchaId, captchaCode);
+        }}
+        isSubmitting={isSubmitting}
       />
     </form>
   );
