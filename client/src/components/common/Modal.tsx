@@ -73,8 +73,8 @@ export const Modal: React.FC<ModalProps> = ({
         className={`${styles.modal} ${sizeClass} ${themeClass} ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header (if title, headerExtra or close button is needed) */}
-        {(title || headerExtra || showCloseButton) && (
+        {/* Modal Header (if title or headerExtra is provided) */}
+        {(title || headerExtra) ? (
           <div className={`${styles.header} ${themeClass}`}>
             <div className={styles.headerMain}>
               {title && (
@@ -101,6 +101,18 @@ export const Modal: React.FC<ModalProps> = ({
               )}
             </div>
           </div>
+        ) : (
+          showCloseButton && (
+            <button
+              type="button"
+              className={`${styles.floatingCloseBtn} ${themeClass}`}
+              onClick={onClose}
+              title="Закрыть"
+              aria-label="Закрыть модальное окно"
+            >
+              <X size={18} />
+            </button>
+          )
         )}
 
         {/* Modal Body */}

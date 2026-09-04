@@ -23,6 +23,7 @@
 }
 
 .modal {
+  position: relative;
   background: #ffffff;
   border: 1px solid $border-subtle;
   border-radius: $radius-lg;
@@ -154,3 +155,36 @@
     border-color: #334155;
   }
 }
+
+.floatingCloseBtn {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  background: transparent;
+  border: none;
+  color: $text-faint;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  z-index: 10;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: $text-main;
+    background: $bg-subtle;
+  }
+
+  &.darkTheme {
+    color: #94a3b8;
+
+    &:hover {
+      color: #ffffff;
+      background: #1e293b;
+    }
+  }
+}
+
