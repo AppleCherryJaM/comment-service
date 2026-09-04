@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshCw, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
 import { commentsService } from '../../services/commentsService';
 import { useSocket } from '../../context/SocketContext';
@@ -7,6 +7,7 @@ import { CommentItem } from './CommentItem';
 import { CommentForm } from './CommentForm';
 import { AttachmentViewer } from '../media/AttachmentViewer';
 import type { Attachment, PaginatedCommentsResponse } from '../../types';
+import styles from './CommentList.module.scss';
 
 export const CommentList: React.FC = () => {
   const { newCommentNotification, clearNotification } = useSocket();
@@ -14,13 +15,13 @@ export const CommentList: React.FC = () => {
   const [commentsData, setCommentsData] = useState<PaginatedCommentsResponse | null>(null);
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(25);
-  const [sortBy, setSortBy] = useState<'user_name' | 'email' | 'created_at'>('created_at');
+  const [sortBy, setSortBy] = useState<'name' | 'email' | 'created_at'>('created_at');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeAttachment, setActiveAttachment] = useState<Attachment | null>(null);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await commentsService.getComments({
@@ -32,17 +33,18 @@ export const CommentList: React.FC = () => {
       setCommentsData(data);
     } catch (err) {
       console.error('Failed to fetch comments', err);
+      setCommentsData({ data: [], total: 0, page: 1, limit: 25, totalPages: 0 });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, limit, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchComments();
-  }, [page, sortBy, sortOrder]);
+  }, [fetchComments]);
 
   const handleSortChange = (
-    newSortBy: 'user_name' | 'email' | 'created_at',
+    newSortBy: 'name' | 'email' | 'created_at',
     newSortOrder: 'ASC' | 'DESC'
   ) => {
     setSortBy(newSortBy);
@@ -55,53 +57,56 @@ export const CommentList: React.FC = () => {
     fetchComments();
   };
 
-  const notificationUsername = newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
+  const commentsList = commentsData?.data ?? [];
+  const totalComments = commentsData?.total ?? commentsData?.meta?.total ?? 0;
+  const totalPages = commentsData?.totalPages ?? commentsData?.meta?.totalPages ?? 0;
+  const notificationUsername =
+    newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
 
   return (
-    <div className="comments-main-section">
+    <div className={styles.section}>
       {/* Toast Notification Banner for Real-time WebSockets */}
       {newCommentNotification && (
-        <div className="websocket-toast-banner" onClick={handleRefreshNew}>
-          <div className="toast-content">
-            <Bell size={18} className="toast-bell" />
+        <div className={styles.toastBanner} onClick={handleRefreshNew}>
+          <div className={styles.toastContent}>
+            <Bell size={18} />
             <span>
               Поступил новый комментарий от <strong>{notificationUsername}</strong>!
             </span>
           </div>
-          <button type="button" className="btn btn-sm btn-primary">
-            <RefreshCw size={14} /> Обновить
+          <button type="button" className={styles.refreshBtn}>
+            <RefreshCw size={13} /> Обновить
           </button>
         </div>
       )}
 
       {/* Main Comment Form */}
-      <div className="main-form-card">
-        <h2 className="section-title">Оставить главный комментарий</h2>
+      <div className={styles.mainComposer}>
         <CommentForm onSuccess={fetchComments} />
       </div>
 
       {/* Comments List & Sorting Bar */}
-      <div className="comments-tree-container">
+      <div className={styles.treeContainer}>
         <CommentSortHeader
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
-          totalComments={commentsData?.total || 0}
+          totalComments={totalComments}
         />
 
         {isLoading ? (
-          <div className="comments-loading-skeleton">
-            <div className="skeleton-card" />
-            <div className="skeleton-card" />
-            <div className="skeleton-card" />
+          <div className={styles.loadingSkeleton}>
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
           </div>
-        ) : !commentsData || commentsData.data.length === 0 ? (
-          <div className="empty-comments-box">
+        ) : commentsList.length === 0 ? (
+          <div className={styles.emptyBox}>
             <p>Пока нет главных комментариев. Будьте первыми!</p>
           </div>
         ) : (
-          <div className="comments-list-stack">
-            {commentsData.data.map((comment) => (
+          <div className={styles.listStack}>
+            {commentsList.map((comment) => (
               <CommentItem
                 key={comment.id}
                 comment={comment}
@@ -113,23 +118,23 @@ export const CommentList: React.FC = () => {
         )}
 
         {/* Pagination Bar */}
-        {commentsData && commentsData.totalPages > 1 && (
-          <div className="pagination-bar">
+        {totalPages > 1 && (
+          <div className={styles.paginationBar}>
             <button
               type="button"
-              className="page-btn"
+              className={styles.pageBtn}
               disabled={page === 1}
-              onClick={() => setPage(page - 1)}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               <ChevronLeft size={16} /> Назад
             </button>
 
-            <div className="page-numbers">
-              {Array.from({ length: commentsData.totalPages }, (_, i) => i + 1).map((p) => (
+            <div className={styles.pageNumbers}>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
                   type="button"
-                  className={`page-num-btn ${p === page ? 'active' : ''}`}
+                  className={`${styles.pageNumBtn} ${p === page ? styles.active : ''}`}
                   onClick={() => setPage(p)}
                 >
                   {p}
@@ -139,9 +144,9 @@ export const CommentList: React.FC = () => {
 
             <button
               type="button"
-              className="page-btn"
-              disabled={page === commentsData.totalPages}
-              onClick={() => setPage(page + 1)}
+              className={styles.pageBtn}
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
               Вперёд <ChevronRight size={16} />
             </button>

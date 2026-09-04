@@ -1,0 +1,127 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.section {
+  width: 100%;
+}
+
+.toastBanner {
+  background: $primary;
+  color: #ffffff;
+  border-radius: $radius-md;
+  padding: 0.65rem 1rem;
+  @include flex-between;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    background: $primary-hover;
+    transform: translateY(-1px);
+  }
+
+  .toastContent {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .refreshBtn {
+    @include btn-secondary;
+    background: #ffffff;
+    color: $primary;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+
+    &:hover {
+      background: $bg-subtle;
+    }
+  }
+}
+
+.mainComposer {
+  margin-bottom: 2rem;
+}
+
+.treeContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.loadingSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .skeletonCard {
+    height: 75px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: $radius-md;
+  }
+}
+
+.emptyBox {
+  background: $bg-surface;
+  border: 1px dashed $border-subtle;
+  border-radius: $radius-md;
+  padding: 2.5rem;
+  text-align: center;
+  color: $text-muted;
+  font-size: 0.9rem;
+}
+
+.listStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.paginationBar {
+  @include flex-between;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border-subtle;
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.pageBtn,
+.pageNumBtn {
+  background: $bg-surface;
+  border: 1px solid $border-subtle;
+  color: $text-main;
+  padding: 0.3rem 0.65rem;
+  border-radius: $radius-sm;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: $bg-subtle;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    background: $primary;
+    border-color: $primary;
+    color: #ffffff;
+    font-weight: 600;
+  }
+}

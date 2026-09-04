@@ -1,7 +1,9 @@
 import React from 'react';
-import { X, CheckCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 import { validateXHTML } from '../../utils/xhtmlValidator';
+import { ModalComponent } from '../common';
 import type { Attachment } from '../../types';
+import styles from './CommentPreviewModal.module.scss';
 
 interface CommentPreviewModalProps {
   isOpen: boolean;
@@ -20,71 +22,64 @@ export const CommentPreviewModal: React.FC<CommentPreviewModalProps> = ({
   text,
   attachments = [],
 }) => {
-  if (!isOpen) return null;
-
   const validation = validateXHTML(text);
 
+  const footer = (
+    <button type="button" className={styles.closeBtnSecondary} onClick={onClose}>
+      Закрыть
+    </button>
+  );
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content preview-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>Предпросмотр комментария</h3>
-          <button type="button" className="close-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
+    <ModalComponent
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Предпросмотр комментария"
+      size="lg"
+      footer={footer}
+    >
+      {!validation.isValid ? (
+        <div className={`${styles.alert} ${styles.error}`}>
+          <AlertTriangle size={18} />
+          <span>{validation.error}</span>
         </div>
+      ) : (
+        <div className={`${styles.alert} ${styles.success}`}>
+          <CheckCircle size={18} />
+          <span>Синтаксис XHTML-тегов верен!</span>
+        </div>
+      )}
 
-        <div className="modal-body">
-          {!validation.isValid ? (
-            <div className="validation-alert error">
-              <AlertTriangle size={18} />
-              <span>{validation.error}</span>
-            </div>
-          ) : (
-            <div className="validation-alert success">
-              <CheckCircle size={18} />
-              <span>Синтаксис XHTML-тегов верен!</span>
-            </div>
-          )}
-
-          <div className="comment-preview-card">
-            <div className="preview-author-bar">
-              <div className="avatar-placeholder">
-                {(username || 'А').charAt(0).toUpperCase()}
-              </div>
-              <div className="author-meta">
-                <span className="author-name">{username || 'Имя пользователя'}</span>
-                <span className="author-email">{email || 'user@example.com'}</span>
-              </div>
-              <span className="preview-badge">Только что</span>
-            </div>
-
-            <div
-              className="comment-text-content"
-              dangerouslySetInnerHTML={{ __html: text || '<i>Текст комментария пуст...</i>' }}
-            />
-
-            {attachments.length > 0 && (
-              <div className="attachments-preview-list">
-                <h4>Вложения ({attachments.length}):</h4>
-                <div className="attachments-grid">
-                  {attachments.map((att) => (
-                    <div key={att.id} className="attachment-chip">
-                      {att.fileType === 'image' ? '🖼️' : '📄'} {att.fileName}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+      <div className={styles.previewCard}>
+        <div className={styles.authorBar}>
+          <div className={styles.avatar}>
+            {(username || 'А').charAt(0).toUpperCase()}
           </div>
+          <div className={styles.meta}>
+            <span className={styles.name}>{username || 'Имя пользователя'}</span>
+            <span className={styles.email}>{email || 'user@example.com'}</span>
+          </div>
+          <span className={styles.badge}>Только что</span>
         </div>
 
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>
-            Закрыть
-          </button>
-        </div>
+        <div
+          className={styles.textContent}
+          dangerouslySetInnerHTML={{ __html: text || '<i>Текст комментария пуст...</i>' }}
+        />
+
+        {attachments.length > 0 && (
+          <div className={styles.attachmentsList}>
+            <h4>Вложения ({attachments.length}):</h4>
+            <div className={styles.attachmentsGrid}>
+              {attachments.map((att) => (
+                <div key={att.id} className={styles.attachmentChip}>
+                  {att.fileType === 'image' ? '🖼️' : '📄'} {att.fileName}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </ModalComponent>
   );
 };
