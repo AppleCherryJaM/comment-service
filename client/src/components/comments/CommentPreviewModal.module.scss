@@ -1,0 +1,189 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  @include flex-center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #ffffff;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: $shadow-lg;
+  overflow: hidden;
+}
+
+.header {
+  @include flex-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid $border-subtle;
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $text-main;
+  }
+
+  .closeBtn {
+    background: none;
+    border: none;
+    color: $text-faint;
+    cursor: pointer;
+    display: flex;
+    padding: 2px;
+    border-radius: 4px;
+
+    &:hover {
+      color: $text-main;
+    }
+  }
+}
+
+.body {
+  padding: 1.25rem;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: $radius-sm;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+
+  &.error {
+    background: rgba($danger, 0.08);
+    color: $danger;
+    border: 1px solid rgba($danger, 0.2);
+  }
+
+  &.success {
+    background: rgba($success, 0.08);
+    color: $success;
+    border: 1px solid rgba($success, 0.2);
+  }
+}
+
+.previewCard {
+  background: $bg-subtle;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  padding: 1rem;
+}
+
+.authorBar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: $primary;
+    color: #ffffff;
+    @include flex-center;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: $text-main;
+    }
+
+    .email {
+      font-size: 0.75rem;
+      color: $text-muted;
+    }
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    color: $text-faint;
+  }
+}
+
+.textContent {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: $text-main;
+  word-break: break-word;
+
+  a {
+    color: $primary;
+    text-decoration: underline;
+  }
+
+  code {
+    background: #ffffff;
+    border: 1px solid $border-subtle;
+    padding: 0.15rem 0.35rem;
+    border-radius: 3px;
+    font-family: $font-mono;
+    font-size: 0.82rem;
+    color: #c026d3;
+  }
+}
+
+.attachmentsList {
+  margin-top: 0.85rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid $border-subtle;
+
+  h4 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+  }
+}
+
+.attachmentsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.attachmentChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #ffffff;
+  border: 1px solid $border-subtle;
+  padding: 0.2rem 0.5rem;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  color: $text-muted;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid $border-subtle;
+  background: $bg-subtle;
+
+  .closeBtnSecondary {
+    @include btn-secondary;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+  }
+}

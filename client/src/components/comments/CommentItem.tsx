@@ -12,6 +12,7 @@ import {
 import { formatDate } from '../../utils/dateFormatter';
 import { CommentForm } from './CommentForm';
 import type { Attachment, Comment } from '../../types';
+import styles from './CommentItem.module.scss';
 
 interface CommentItemProps {
   comment: Comment;
@@ -58,35 +59,35 @@ export const CommentItem: React.FC<CommentItemProps> = ({
     : null;
 
   return (
-    <div className={`modern-comment-node depth-${Math.min(depth, 4)}`}>
-      <div className="modern-comment-card">
+    <div className={styles.commentNode}>
+      <div className={styles.commentCard}>
         {/* Comment Header */}
-        <div className="comment-top-row">
-          <div className="author-meta-cluster">
-            <div className="author-avatar" style={{ background: avatarGradient }}>
+        <div className={styles.topRow}>
+          <div className={styles.authorMeta}>
+            <div className={styles.avatar} style={{ background: avatarGradient }}>
               {initialLetter}
             </div>
-            <div className="author-identity">
-              <span className="author-title">{username}</span>
-              <span className="author-timestamp">{formatDate(createdAt)}</span>
+            <div className={styles.identity}>
+              <span className={styles.authorName}>{username}</span>
+              <span className={styles.timestamp}>{formatDate(createdAt)}</span>
             </div>
           </div>
 
-          <div className="comment-header-tools">
+          <div className={styles.headerTools}>
             <button
               type="button"
-              className="tool-btn"
+              className={styles.toolBtn}
               title="Пермалинк"
               onClick={() => alert(`Ссылка на комментарий #${comment.id}`)}
             >
               <Hash size={14} />
             </button>
-            <button type="button" className="tool-btn" title="В закладки">
+            <button type="button" className={styles.toolBtn} title="В закладки">
               <Bookmark size={14} />
             </button>
             <button
               type="button"
-              className={`tool-btn reply-trigger ${isReplying ? 'active' : ''}`}
+              className={`${styles.toolBtn} ${styles.replyTrigger} ${isReplying ? styles.active : ''}`}
               title="Ответить на комментарий"
               onClick={() => setIsReplying(!isReplying)}
             >
@@ -99,7 +100,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
                 href={comment.home_page}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tool-btn"
+                className={styles.toolBtn}
                 title={`Сайт: ${comment.home_page}`}
               >
                 <Info size={14} />
@@ -109,31 +110,31 @@ export const CommentItem: React.FC<CommentItemProps> = ({
             {hasReplies && (
               <button
                 type="button"
-                className="tool-btn collapse-trigger"
+                className={styles.toolBtn}
                 title={isExpanded ? 'Свернуть ветку' : 'Развернуть ветку'}
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                <span className="replies-count-tag">{comment.replies!.length}</span>
+                <span className={styles.repliesCount}>{comment.replies!.length}</span>
               </button>
             )}
 
             {/* Voting Pill */}
-            <div className="vote-pill">
+            <div className={styles.votePill}>
               <button
                 type="button"
-                className="vote-arrow up"
+                className={styles.voteArrow}
                 onClick={() => setVotes(votes + 1)}
                 title="Нравится"
               >
                 <ChevronUp size={13} />
               </button>
-              <span className={`vote-value ${votes > 0 ? 'pos' : votes < 0 ? 'neg' : ''}`}>
+              <span className={`${styles.voteValue} ${votes > 0 ? styles.pos : votes < 0 ? styles.neg : ''}`}>
                 {votes}
               </span>
               <button
                 type="button"
-                className="vote-arrow down"
+                className={styles.voteArrow}
                 onClick={() => setVotes(votes - 1)}
                 title="Не нравится"
               >
@@ -144,37 +145,37 @@ export const CommentItem: React.FC<CommentItemProps> = ({
         </div>
 
         {/* Comment Content */}
-        <div className="comment-body-area">
+        <div className={styles.bodyArea}>
           {parentSnippet && (
-            <div className="modern-quote-bubble" title="Цитата">
+            <div className={styles.quoteBubble} title="Цитата">
               {parentSnippet}
             </div>
           )}
 
           <div
-            className="modern-comment-html"
+            className={styles.commentHtml}
             dangerouslySetInnerHTML={{ __html: comment.text }}
           />
 
           {/* Attachments */}
           {comment.attachments && comment.attachments.length > 0 && (
-            <div className="comment-media-grid">
+            <div className={styles.mediaGrid}>
               {comment.attachments.map((att) => (
                 <div
                   key={att.id}
-                  className="media-thumb-chip"
+                  className={styles.mediaThumbChip}
                   onClick={() => onOpenAttachment(att)}
                   title={att.fileName}
                 >
                   {att.fileType === 'image' ? (
-                    <div className="media-image-box">
+                    <div className={styles.imageBox}>
                       <img src={att.fileUrl} alt={att.fileName} />
-                      <span className="media-overlay">
+                      <span className={styles.overlay}>
                         <ImageIcon size={11} /> {(att.fileSize / 1024).toFixed(0)} KB
                       </span>
                     </div>
                   ) : (
-                    <div className="media-text-chip">
+                    <div className={styles.textChip}>
                       <FileText size={15} />
                       <span>{att.fileName}</span>
                     </div>
@@ -188,7 +189,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
 
       {/* Inline Reply Composer */}
       {isReplying && (
-        <div className="inline-reply-wrapper">
+        <div className={styles.inlineReplyWrapper}>
           <CommentForm
             parentCommentId={comment.id}
             parentUsername={username}
@@ -203,7 +204,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
 
       {/* Nested Replies */}
       {hasReplies && isExpanded && (
-        <div className="modern-subtree">
+        <div className={styles.subtree}>
           {comment.replies!.map((reply) => (
             <CommentItem
               key={reply.id}

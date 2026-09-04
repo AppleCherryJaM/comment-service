@@ -2,6 +2,7 @@ import React from 'react';
 import { X, CheckCircle, AlertTriangle } from 'lucide-react';
 import { validateXHTML } from '../../utils/xhtmlValidator';
 import type { Attachment } from '../../types';
+import styles from './CommentPreviewModal.module.scss';
 
 interface CommentPreviewModalProps {
   isOpen: boolean;
@@ -25,51 +26,51 @@ export const CommentPreviewModal: React.FC<CommentPreviewModalProps> = ({
   const validation = validateXHTML(text);
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content preview-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className={styles.backdrop} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <h3>Предпросмотр комментария</h3>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>
             <X size={20} />
           </button>
         </div>
 
-        <div className="modal-body">
+        <div className={styles.body}>
           {!validation.isValid ? (
-            <div className="validation-alert error">
+            <div className={`${styles.alert} ${styles.error}`}>
               <AlertTriangle size={18} />
               <span>{validation.error}</span>
             </div>
           ) : (
-            <div className="validation-alert success">
+            <div className={`${styles.alert} ${styles.success}`}>
               <CheckCircle size={18} />
               <span>Синтаксис XHTML-тегов верен!</span>
             </div>
           )}
 
-          <div className="comment-preview-card">
-            <div className="preview-author-bar">
-              <div className="avatar-placeholder">
+          <div className={styles.previewCard}>
+            <div className={styles.authorBar}>
+              <div className={styles.avatar}>
                 {(username || 'А').charAt(0).toUpperCase()}
               </div>
-              <div className="author-meta">
-                <span className="author-name">{username || 'Имя пользователя'}</span>
-                <span className="author-email">{email || 'user@example.com'}</span>
+              <div className={styles.meta}>
+                <span className={styles.name}>{username || 'Имя пользователя'}</span>
+                <span className={styles.email}>{email || 'user@example.com'}</span>
               </div>
-              <span className="preview-badge">Только что</span>
+              <span className={styles.badge}>Только что</span>
             </div>
 
             <div
-              className="comment-text-content"
+              className={styles.textContent}
               dangerouslySetInnerHTML={{ __html: text || '<i>Текст комментария пуст...</i>' }}
             />
 
             {attachments.length > 0 && (
-              <div className="attachments-preview-list">
+              <div className={styles.attachmentsList}>
                 <h4>Вложения ({attachments.length}):</h4>
-                <div className="attachments-grid">
+                <div className={styles.attachmentsGrid}>
                   {attachments.map((att) => (
-                    <div key={att.id} className="attachment-chip">
+                    <div key={att.id} className={styles.attachmentChip}>
                       {att.fileType === 'image' ? '🖼️' : '📄'} {att.fileName}
                     </div>
                   ))}
@@ -79,8 +80,8 @@ export const CommentPreviewModal: React.FC<CommentPreviewModalProps> = ({
           </div>
         </div>
 
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>
+        <div className={styles.footer}>
+          <button type="button" className={styles.closeBtnSecondary} onClick={onClose}>
             Закрыть
           </button>
         </div>

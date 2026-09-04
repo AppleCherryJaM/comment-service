@@ -7,6 +7,7 @@ import { CaptchaWidget } from '../captcha/CaptchaWidget';
 import { CommentToolbar } from './CommentToolbar';
 import { CommentPreviewModal } from './CommentPreviewModal';
 import type { Attachment, CreateCommentPayload } from '../../types';
+import styles from './CommentForm.module.scss';
 
 interface CommentFormProps {
   parentCommentId?: string;
@@ -123,12 +124,12 @@ export const CommentForm: React.FC<CommentFormProps> = ({
   };
 
   return (
-    <form className={`modern-composer ${parentCommentId ? 'reply-composer' : ''}`} onSubmit={handleSubmit}>
+    <form className={`${styles.composer} ${parentCommentId ? styles.reply : ''}`} onSubmit={handleSubmit}>
       {parentCommentId && (
-        <div className="composer-reply-header">
+        <div className={styles.replyHeader}>
           <span>Ответ для <strong>{parentUsername || 'Пользователь'}</strong></span>
           {onCancel && (
-            <button type="button" className="close-reply-btn" onClick={onCancel} title="Отменить ответ">
+            <button type="button" className={styles.closeReplyBtn} onClick={onCancel} title="Отменить ответ">
               <X size={15} />
             </button>
           )}
@@ -136,7 +137,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
       )}
 
       {formError && (
-        <div className="composer-alert">
+        <div className={styles.alert}>
           <AlertCircle size={15} />
           <span>{formError}</span>
         </div>
@@ -144,10 +145,10 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 
       {/* Guest Authorship Fields */}
       {!isAuthenticated && (
-        <div className="composer-guest-row">
+        <div className={styles.guestRow}>
           <input
             type="text"
-            className="composer-guest-input"
+            className={styles.guestInput}
             placeholder="Ваше имя *"
             value={currentUserName}
             onChange={(e) => setUsername(e.target.value)}
@@ -157,7 +158,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
           />
           <input
             type="email"
-            className="composer-guest-input"
+            className={styles.guestInput}
             placeholder="E-mail *"
             value={currentUserEmail}
             onChange={(e) => setEmail(e.target.value)}
@@ -165,7 +166,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
           />
           <input
             type="url"
-            className="composer-guest-input"
+            className={styles.guestInput}
             placeholder="Сайт (опционально)"
             value={homePage}
             onChange={(e) => setHomePage(e.target.value)}
@@ -174,10 +175,10 @@ export const CommentForm: React.FC<CommentFormProps> = ({
       )}
 
       {/* Textarea Area */}
-      <div className="composer-editor-box">
+      <div className={styles.editorBox}>
         <textarea
           ref={textareaRef}
-          className="composer-textarea"
+          className={styles.textarea}
           rows={3}
           placeholder="Напишите комментарий... (поддерживаются теги: <i>, <strong>, <code>, <a href='...'>)"
           value={text}
@@ -187,9 +188,9 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 
         {/* Attachment Chips */}
         {attachments.length > 0 && (
-          <div className="composer-attached-chips">
+          <div className={styles.attachedChips}>
             {attachments.map((att) => (
-              <span key={att.id} className="composer-chip">
+              <span key={att.id} className={styles.chip}>
                 {att.fileType === 'image' ? '🖼️' : '📄'} {att.fileName}
                 <button type="button" onClick={() => removeAttachment(att.id)}>
                   <X size={12} />
@@ -200,8 +201,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({
         )}
 
         {/* Action Bar Inside Box */}
-        <div className="composer-bottom-bar">
-          <div className="bottom-bar-left">
+        <div className={styles.bottomBar}>
+          <div className={styles.bottomLeft}>
             <CommentToolbar
               textareaRef={textareaRef}
               text={text}
@@ -209,7 +210,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
               onPreviewClick={() => setIsPreviewOpen(true)}
             />
 
-            <label className={`composer-attach-btn ${isUploading ? 'uploading' : ''}`} title="Прикрепить изображение или TXT">
+            <label className={`${styles.attachBtn} ${isUploading ? styles.uploading : ''}`} title="Прикрепить изображение или TXT">
               <Paperclip size={15} />
               <input
                 type="file"
@@ -221,7 +222,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
             </label>
           </div>
 
-          <div className="bottom-bar-right">
+          <div className={styles.bottomRight}>
             {!isAuthenticated && (
               <CaptchaWidget
                 captchaCode={captchaCode}
@@ -234,7 +235,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 
             <button
               type="submit"
-              className="composer-submit-btn"
+              className={styles.submitBtn}
               disabled={isSubmitting || !text.trim()}
             >
               <Send size={14} />

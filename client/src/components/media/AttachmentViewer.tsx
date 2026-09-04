@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, Download } from 'lucide-react';
 import type { Attachment } from '../../types';
+import styles from './AttachmentViewer.module.scss';
 
 interface AttachmentViewerProps {
   attachment: Attachment | null;
@@ -28,44 +29,44 @@ export const AttachmentViewer: React.FC<AttachmentViewerProps> = ({
   if (!attachment) return null;
 
   return (
-    <div className="modal-backdrop lightbox-backdrop" onClick={onClose}>
+    <div className={styles.backdrop} onClick={onClose}>
       <div
-        className={`modal-content ${attachment.fileType === 'image' ? 'lightbox-content' : 'text-viewer-content'}`}
+        className={`${styles.modal} ${attachment.fileType === 'image' ? styles.imageModal : ''}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-header">
-          <span className="attachment-title">
+        <div className={styles.header}>
+          <span className={styles.title}>
             {attachment.fileType === 'image' ? '🖼️ ' : '📄 '}
             {attachment.fileName} ({(attachment.fileSize / 1024).toFixed(1)} KB)
           </span>
-          <div className="header-actions">
+          <div className={styles.actions}>
             <a
               href={attachment.fileUrl}
               download={attachment.fileName}
               target="_blank"
               rel="noopener noreferrer"
-              className="action-btn"
+              className={styles.actionBtn}
               title="Скачать файл"
             >
               <Download size={18} />
             </a>
-            <button type="button" className="close-btn" onClick={onClose}>
+            <button type="button" className={styles.closeBtn} onClick={onClose}>
               <X size={20} />
             </button>
           </div>
         </div>
 
-        <div className="modal-body">
+        <div className={styles.body}>
           {attachment.fileType === 'image' ? (
-            <div className="lightbox-image-wrapper">
-              <img src={attachment.fileUrl} alt={attachment.fileName} className="lightbox-image" />
+            <div className={styles.imageWrapper}>
+              <img src={attachment.fileUrl} alt={attachment.fileName} className={styles.image} />
             </div>
           ) : (
-            <div className="text-file-viewer">
+            <div className={styles.textViewer}>
               {isLoadingText ? (
-                <div className="spinner-loading">Загрузка текста...</div>
+                <div className={styles.loading}>Загрузка текста...</div>
               ) : (
-                <pre className="text-code-block">{textContent}</pre>
+                <pre className={styles.codeBlock}>{textContent}</pre>
               )}
             </div>
           )}

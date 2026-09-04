@@ -1,5 +1,6 @@
 import React from 'react';
 import { Italic, Bold, Code, Link2, Eye } from 'lucide-react';
+import styles from './CommentToolbar.module.scss';
 
 interface CommentToolbarProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -46,11 +47,11 @@ export const CommentToolbar: React.FC<CommentToolbarProps> = ({
   };
 
   return (
-    <div className="comment-toolbar-minimal">
-      <div className="toolbar-actions-left">
+    <div className={styles.toolbar}>
+      <div className={styles.actionsLeft}>
         <button
           type="button"
-          className="toolbar-icon-btn"
+          className={styles.iconBtn}
           onClick={() => insertTag('strong')}
           title="Жирный текст (strong)"
         >
@@ -58,7 +59,7 @@ export const CommentToolbar: React.FC<CommentToolbarProps> = ({
         </button>
         <button
           type="button"
-          className="toolbar-icon-btn"
+          className={styles.iconBtn}
           onClick={() => insertTag('i')}
           title="Курсив (i)"
         >
@@ -66,7 +67,7 @@ export const CommentToolbar: React.FC<CommentToolbarProps> = ({
         </button>
         <button
           type="button"
-          className="toolbar-icon-btn"
+          className={styles.iconBtn}
           onClick={() => insertTag('code')}
           title="Фрагмент кода (code)"
         >
@@ -74,7 +75,7 @@ export const CommentToolbar: React.FC<CommentToolbarProps> = ({
         </button>
         <button
           type="button"
-          className="toolbar-icon-btn"
+          className={styles.iconBtn}
           onClick={handleLinkTag}
           title="Вставить ссылку (a)"
         >
@@ -84,7 +85,7 @@ export const CommentToolbar: React.FC<CommentToolbarProps> = ({
 
       <button
         type="button"
-        className="toolbar-preview-btn"
+        className={styles.previewBtn}
         onClick={onPreviewClick}
         title="Предпросмотр форматирования"
       >

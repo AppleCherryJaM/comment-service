@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowUp, ArrowDown, MessageCircle } from 'lucide-react';
+import styles from './CommentSortHeader.module.scss';
 
 interface CommentSortHeaderProps {
   sortBy: 'name' | 'email' | 'created_at';
@@ -25,24 +26,24 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
   const renderSortIndicator = (field: 'name' | 'email' | 'created_at') => {
     if (sortBy !== field) return null;
     return sortOrder === 'ASC' ? (
-      <ArrowUp size={13} className="sort-dir-icon" />
+      <ArrowUp size={13} className={styles.dirIcon} />
     ) : (
-      <ArrowDown size={13} className="sort-dir-icon" />
+      <ArrowDown size={13} className={styles.dirIcon} />
     );
   };
 
   return (
-    <div className="modern-sort-header">
-      <div className="sort-header-title">
-        <MessageCircle size={18} className="title-icon" />
-        <span className="title-text">Обсуждение</span>
-        <span className="title-count">{totalComments}</span>
+    <div className={styles.header}>
+      <div className={styles.titleArea}>
+        <MessageCircle size={18} className={styles.icon} />
+        <span className={styles.text}>Обсуждение</span>
+        <span className={styles.count}>{totalComments}</span>
       </div>
 
-      <div className="sort-segmented-control">
+      <div className={styles.segmentedControl}>
         <button
           type="button"
-          className={`sort-tab-btn ${sortBy === 'created_at' ? 'active' : ''}`}
+          className={`${styles.tabBtn} ${sortBy === 'created_at' ? styles.active : ''}`}
           onClick={() => handleSortClick('created_at')}
         >
           <span>Новые</span>
@@ -51,7 +52,7 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
 
         <button
           type="button"
-          className={`sort-tab-btn ${sortBy === 'name' ? 'active' : ''}`}
+          className={`${styles.tabBtn} ${sortBy === 'name' ? styles.active : ''}`}
           onClick={() => handleSortClick('name')}
         >
           <span>По имени</span>
@@ -60,7 +61,7 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
 
         <button
           type="button"
-          className={`sort-tab-btn ${sortBy === 'email' ? 'active' : ''}`}
+          className={`${styles.tabBtn} ${sortBy === 'email' ? styles.active : ''}`}
           onClick={() => handleSortClick('email')}
         >
           <span>По email</span>

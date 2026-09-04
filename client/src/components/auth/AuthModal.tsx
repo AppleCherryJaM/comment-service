@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, LogIn, UserPlus, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import styles from './AuthModal.module.scss';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -42,13 +43,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content auth-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <div className="auth-tabs">
+    <div className={styles.backdrop} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
+          <div className={styles.tabs}>
             <button
               type="button"
-              className={`auth-tab ${activeTab === 'login' ? 'active' : ''}`}
+              className={`${styles.tab} ${activeTab === 'login' ? styles.active : ''}`}
               onClick={() => {
                 setActiveTab('login');
                 setError('');
@@ -58,7 +59,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </button>
             <button
               type="button"
-              className={`auth-tab ${activeTab === 'register' ? 'active' : ''}`}
+              className={`${styles.tab} ${activeTab === 'register' ? styles.active : ''}`}
               onClick={() => {
                 setActiveTab('register');
                 setError('');
@@ -67,28 +68,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <UserPlus size={16} /> Регистрация
             </button>
           </div>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="modal-body">
+        <form onSubmit={handleSubmit}>
+          <div className={styles.body}>
             {error && (
-              <div className="form-error-alert">
+              <div className={styles.errorAlert}>
                 <AlertCircle size={18} />
                 <span>{error}</span>
               </div>
             )}
 
             {activeTab === 'register' && (
-              <div className="form-group">
-                <label className="field-label">
-                  Имя пользователя <span className="required">*</span>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  Имя пользователя <span className={styles.required}>*</span>
                 </label>
                 <input
                   type="text"
-                  className="input-field"
+                  className={styles.input}
                   placeholder="ИванИванов (только латиница и цифры)"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -99,13 +100,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            <div className="form-group">
-              <label className="field-label">
-                E-mail <span className="required">*</span>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
+                E-mail <span className={styles.required}>*</span>
               </label>
               <input
                 type="email"
-                className="input-field"
+                className={styles.input}
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -113,13 +114,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            <div className="form-group">
-              <label className="field-label">
-                Пароль <span className="required">*</span>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
+                Пароль <span className={styles.required}>*</span>
               </label>
               <input
                 type="password"
-                className="input-field"
+                className={styles.input}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -129,11 +130,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </div>
 
             {activeTab === 'register' && (
-              <div className="form-group">
-                <label className="field-label">Домашняя страница</label>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Домашняя страница</label>
                 <input
                   type="url"
-                  className="input-field"
+                  className={styles.input}
                   placeholder="https://example.com"
                   value={homePage}
                   onChange={(e) => setHomePage(e.target.value)}
@@ -142,11 +143,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>
+          <div className={styles.footer}>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>
               Отмена
             </button>
-            <button type="submit" className="btn btn-primary" disabled={isLoading}>
+            <button type="submit" className={styles.submitBtn} disabled={isLoading}>
               {isLoading ? 'Загрузка...' : activeTab === 'login' ? 'Войти' : 'Зарегистрироваться'}
             </button>
           </div>

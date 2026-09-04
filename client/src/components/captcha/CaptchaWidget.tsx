@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 import { captchaService } from '../../services/captchaService';
+import styles from './CaptchaWidget.module.scss';
 
 interface CaptchaWidgetProps {
   captchaCode: string;
@@ -48,21 +49,21 @@ export const CaptchaWidget: React.FC<CaptchaWidgetProps> = ({
   };
 
   return (
-    <div className="captcha-inline-badge">
-      <div className="captcha-svg-inline" onClick={fetchCaptcha} title="Нажмите для обновления">
+    <div className={styles.badge}>
+      <div className={styles.svgInline} onClick={fetchCaptcha} title="Нажмите для обновления">
         {captchaSvg ? (
-          <div className="svg-box" dangerouslySetInnerHTML={{ __html: captchaSvg }} />
+          <div className={styles.svgBox} dangerouslySetInnerHTML={{ __html: captchaSvg }} />
         ) : hasError ? (
-          <span className="captcha-error-inline">
+          <span className={styles.errorInline}>
             <AlertCircle size={13} /> Ошибка
           </span>
         ) : (
-          <span className="captcha-loading-inline">...</span>
+          <span className={styles.loadingInline}>...</span>
         )}
 
         <button
           type="button"
-          className={`captcha-reload-btn ${isLoading ? 'spinning' : ''}`}
+          className={`${styles.reloadBtn} ${isLoading ? styles.spinning : ''}`}
           onClick={(e) => {
             e.stopPropagation();
             fetchCaptcha();
@@ -78,7 +79,7 @@ export const CaptchaWidget: React.FC<CaptchaWidgetProps> = ({
         value={captchaCode}
         onChange={handleInputChange}
         placeholder="Код"
-        className={`captcha-input-compact ${error ? 'error' : ''}`}
+        className={`${styles.input} ${error ? styles.hasError : ''}`}
         maxLength={6}
         required
       />
