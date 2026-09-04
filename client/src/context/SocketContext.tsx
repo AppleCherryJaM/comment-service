@@ -17,7 +17,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [newCommentNotification, setNewCommentNotification] = useState<Comment | null>(null);
 
   useEffect(() => {
-    const socketInstance = io('/', {
+    const socketUrl = import.meta.env.VITE_WS_URL || window.location.origin;
+    const socketInstance = io(socketUrl, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
     });
