@@ -1,0 +1,13 @@
+{
+  "name": "dzencode-comments-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:server": "cd server && npm run start:dev",
+    "dev:client": "cd client && npm run dev",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  }
+}
