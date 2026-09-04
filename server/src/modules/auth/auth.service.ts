@@ -59,6 +59,10 @@ export class AuthService {
     return this.generateTokens(storedToken.user);
   }
 
+  async revokeToken(token: string): Promise<void> {
+    await this.refreshTokenRepository.delete({ token });
+  }
+
   async generateTokens(user: User) {
     const payload = { sub: user.id, email: user.email, name: user.name };
     const accessToken = this.jwtService.sign(payload);

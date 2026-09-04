@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authService } from '../services/authService';
+import { setAccessToken } from '../api/client';
 import type { LoginPayload, RegisterPayload, User } from '../types';
 
 interface AuthContextType {
@@ -8,59 +9,63 @@ interface AuthContextType {
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        try {
-          const currentUser = await authService.getMe();
-          setUser(currentUser);
-          localStorage.setItem('user', JSON.stringify(currentUser));
-        } catch {
-          logout();
-        }
+      try {
+        // Attempt silent refresh via HttpOnly cookie
+        const data = await authService.refresh();
+        setAccessToken(data.accessToken);
+        setUser(data.user);
+      } catch {
+        // Not authenticated or refresh cookie expired (guest mode)
+        setAccessToken(null);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     initAuth();
 
-    const handleLogoutEvent = () => logout();
+    const handleLogoutEvent = () => {
+      setAccessToken(null);
+      setUser(null);
+    };
+
     window.addEventListener('auth:logout', handleLogoutEvent);
     return () => window.removeEventListener('auth:logout', handleLogoutEvent);
   }, []);
 
   const login = async (payload: LoginPayload) => {
     const data = await authService.login(payload);
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    setAccessToken(data.accessToken);
     setUser(data.user);
   };
 
   const register = async (payload: RegisterPayload) => {
     const data = await authService.register(payload);
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    setAccessToken(data.accessToken);
     setUser(data.user);
   };
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    setUser(null);
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // Ignore network errors during logout
+    } finally {
+      setAccessToken(null);
+      setUser(null);
+    }
   };
 
   return (
