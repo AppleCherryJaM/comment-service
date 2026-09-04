@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, AlertCircle } from 'lucide-react';
 import { captchaService } from '../../services/captchaService';
+import styles from './CaptchaWidget.module.scss';
 
 interface CaptchaWidgetProps {
   captchaCode: string;
@@ -16,16 +17,23 @@ export const CaptchaWidget: React.FC<CaptchaWidgetProps> = ({
   const [captchaId, setCaptchaId] = useState<string>('');
   const [captchaSvg, setCaptchaSvg] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const fetchCaptcha = async () => {
     setIsLoading(true);
+    setHasError(false);
     try {
       const data = await captchaService.getCaptcha();
-      setCaptchaId(data.captchaId);
-      setCaptchaSvg(data.captchaSvg);
-      onCaptchaChange(data.captchaId, '');
+      if (data && data.captchaSvg) {
+        setCaptchaId(data.captchaId);
+        setCaptchaSvg(data.captchaSvg);
+        onCaptchaChange(data.captchaId, '');
+      } else {
+        setHasError(true);
+      }
     } catch (err) {
       console.error('Failed to fetch captcha', err);
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -41,40 +49,40 @@ export const CaptchaWidget: React.FC<CaptchaWidgetProps> = ({
   };
 
   return (
-    <div className="captcha-container">
-      <label className="field-label">
-        Капча <span className="required">*</span>
-      </label>
-      <div className="captcha-row">
-        <div className="captcha-svg-wrapper" title="Нажмите, чтобы обновить капчу" onClick={fetchCaptcha}>
-          {captchaSvg ? (
-            <div dangerouslySetInnerHTML={{ __html: captchaSvg }} />
-          ) : (
-            <div className="captcha-placeholder">Загрузка...</div>
-          )}
-          <button
-            type="button"
-            className={`captcha-refresh-btn ${isLoading ? 'spinning' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              fetchCaptcha();
-            }}
-            title="Обновить капчу"
-          >
-            <RefreshCw size={16} />
-          </button>
-        </div>
-        <input
-          type="text"
-          value={captchaCode}
-          onChange={handleInputChange}
-          placeholder="Введите символы"
-          className={`input-field ${error ? 'input-error' : ''}`}
-          maxLength={6}
-          required
-        />
+    <div className={styles.badge}>
+      <div className={styles.svgInline} onClick={fetchCaptcha} title="Нажмите для обновления">
+        {captchaSvg ? (
+          <div className={styles.svgBox} dangerouslySetInnerHTML={{ __html: captchaSvg }} />
+        ) : hasError ? (
+          <span className={styles.errorInline}>
+            <AlertCircle size={13} /> Ошибка
+          </span>
+        ) : (
+          <span className={styles.loadingInline}>...</span>
+        )}
+
+        <button
+          type="button"
+          className={`${styles.reloadBtn} ${isLoading ? styles.spinning : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            fetchCaptcha();
+          }}
+          title="Сменить капчу"
+        >
+          <RefreshCw size={13} />
+        </button>
       </div>
-      {error && <span className="error-text">{error}</span>}
+
+      <input
+        type="text"
+        value={captchaCode}
+        onChange={handleInputChange}
+        placeholder="Код"
+        className={`${styles.input} ${error ? styles.hasError : ''}`}
+        maxLength={6}
+        required
+      />
     </div>
   );
 };

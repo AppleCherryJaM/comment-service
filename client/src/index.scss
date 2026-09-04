@@ -1,0 +1,33 @@
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+@use './styles/base';
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout {
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem 3.5rem 1.25rem;
+
+  @include mobile {
+    padding: 0 0.85rem 2.5rem 0.85rem;
+  }
+}
+
+// Global Keyframes
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

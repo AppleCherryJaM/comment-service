@@ -7,6 +7,7 @@ import { CommentItem } from './CommentItem';
 import { CommentForm } from './CommentForm';
 import { AttachmentViewer } from '../media/AttachmentViewer';
 import type { Attachment, PaginatedCommentsResponse } from '../../types';
+import styles from './CommentList.module.scss';
 
 export const CommentList: React.FC = () => {
   const { newCommentNotification, clearNotification } = useSocket();
@@ -63,30 +64,29 @@ export const CommentList: React.FC = () => {
     newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
 
   return (
-    <div className="comments-main-section">
+    <div className={styles.section}>
       {/* Toast Notification Banner for Real-time WebSockets */}
       {newCommentNotification && (
-        <div className="websocket-toast-banner" onClick={handleRefreshNew}>
-          <div className="toast-content">
-            <Bell size={18} className="toast-bell" />
+        <div className={styles.toastBanner} onClick={handleRefreshNew}>
+          <div className={styles.toastContent}>
+            <Bell size={18} />
             <span>
               Поступил новый комментарий от <strong>{notificationUsername}</strong>!
             </span>
           </div>
-          <button type="button" className="btn btn-sm btn-primary">
-            <RefreshCw size={14} /> Обновить
+          <button type="button" className={styles.refreshBtn}>
+            <RefreshCw size={13} /> Обновить
           </button>
         </div>
       )}
 
       {/* Main Comment Form */}
-      <div className="main-form-card">
-        <h2 className="section-title">Оставить главный комментарий</h2>
+      <div className={styles.mainComposer}>
         <CommentForm onSuccess={fetchComments} />
       </div>
 
       {/* Comments List & Sorting Bar */}
-      <div className="comments-tree-container">
+      <div className={styles.treeContainer}>
         <CommentSortHeader
           sortBy={sortBy}
           sortOrder={sortOrder}
@@ -95,17 +95,17 @@ export const CommentList: React.FC = () => {
         />
 
         {isLoading ? (
-          <div className="comments-loading-skeleton">
-            <div className="skeleton-card" />
-            <div className="skeleton-card" />
-            <div className="skeleton-card" />
+          <div className={styles.loadingSkeleton}>
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
           </div>
         ) : commentsList.length === 0 ? (
-          <div className="empty-comments-box">
+          <div className={styles.emptyBox}>
             <p>Пока нет главных комментариев. Будьте первыми!</p>
           </div>
         ) : (
-          <div className="comments-list-stack">
+          <div className={styles.listStack}>
             {commentsList.map((comment) => (
               <CommentItem
                 key={comment.id}
@@ -119,22 +119,22 @@ export const CommentList: React.FC = () => {
 
         {/* Pagination Bar */}
         {totalPages > 1 && (
-          <div className="pagination-bar">
+          <div className={styles.paginationBar}>
             <button
               type="button"
-              className="page-btn"
+              className={styles.pageBtn}
               disabled={page === 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               <ChevronLeft size={16} /> Назад
             </button>
 
-            <div className="page-numbers">
+            <div className={styles.pageNumbers}>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
                   type="button"
-                  className={`page-num-btn ${p === page ? 'active' : ''}`}
+                  className={`${styles.pageNumBtn} ${p === page ? styles.active : ''}`}
                   onClick={() => setPage(p)}
                 >
                   {p}
@@ -144,7 +144,7 @@ export const CommentList: React.FC = () => {
 
             <button
               type="button"
-              className="page-btn"
+              className={styles.pageBtn}
               disabled={page === totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
