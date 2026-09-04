@@ -80,8 +80,7 @@ export const CommentList: React.FC = () => {
       )}
 
       {/* Main Comment Form */}
-      <div className="main-form-card">
-        <h2 className="section-title">Оставить главный комментарий</h2>
+      <div className="main-composer-section">
         <CommentForm onSuccess={fetchComments} />
       </div>
 

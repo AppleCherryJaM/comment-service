@@ -20,6 +20,23 @@ interface CommentItemProps {
   depth?: number;
 }
 
+// Generate consistent avatar color based on username
+function getAvatarGradient(name: string): string {
+  const gradients = [
+    'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+    'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+    'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+    'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
+    'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return gradients[Math.abs(hash) % gradients.length];
+}
+
 export const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   onRefresh,
@@ -31,127 +48,135 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   const [votes, setVotes] = useState<number>(0);
 
   const hasReplies = comment.replies && comment.replies.length > 0;
-  const username = comment.user_name || comment.username || 'Anonym';
+  const username = comment.user_name || comment.username || 'Аноним';
   const createdAt = comment.created_at || comment.createdAt || '';
   const initialLetter = username.charAt(0).toUpperCase();
+  const avatarGradient = getAvatarGradient(username);
 
-  // Extract a snippet for quote block if replying to parent comment
   const parentSnippet = comment.parent_comment_id
     ? 'Внезапно, тщательные исследования конкурентов, которые представляют собой яркий пример...'
     : null;
 
   return (
-    <div className={`comment-card-wrapper depth-${Math.min(depth, 5)}`}>
-      <div className="comment-card">
-        {/* PDF-Style Header Bar */}
-        <div className="comment-card-header-bar">
-          <div className="author-left-block">
-            <div className="avatar-circle-sm">{initialLetter}</div>
-            <span className="author-name-text">{username}</span>
-            <span className="comment-date-text">{formatDate(createdAt)}</span>
+    <div className={`modern-comment-node depth-${Math.min(depth, 4)}`}>
+      <div className="modern-comment-card">
+        {/* Comment Header */}
+        <div className="comment-top-row">
+          <div className="author-meta-cluster">
+            <div className="author-avatar" style={{ background: avatarGradient }}>
+              {initialLetter}
+            </div>
+            <div className="author-identity">
+              <span className="author-title">{username}</span>
+              <span className="author-timestamp">{formatDate(createdAt)}</span>
+            </div>
           </div>
 
-          <div className="header-action-icons">
+          <div className="comment-header-tools">
             <button
               type="button"
-              className="header-action-btn"
-              title="Пермалинк #"
+              className="tool-btn"
+              title="Пермалинк"
               onClick={() => alert(`Ссылка на комментарий #${comment.id}`)}
             >
-              <Hash size={15} />
+              <Hash size={14} />
             </button>
-            <button type="button" className="header-action-btn" title="Сохранить в закладки">
-              <Bookmark size={15} />
+            <button type="button" className="tool-btn" title="В закладки">
+              <Bookmark size={14} />
             </button>
             <button
               type="button"
-              className="header-action-btn"
-              title="Ответить"
+              className={`tool-btn reply-trigger ${isReplying ? 'active' : ''}`}
+              title="Ответить на комментарий"
               onClick={() => setIsReplying(!isReplying)}
             >
-              <CornerUpLeft size={15} />
+              <CornerUpLeft size={14} />
+              <span>Ответить</span>
             </button>
+
             {comment.home_page && (
               <a
                 href={comment.home_page}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="header-action-btn"
-                title={`Страница: ${comment.home_page}`}
+                className="tool-btn"
+                title={`Сайт: ${comment.home_page}`}
               >
-                <Info size={15} />
+                <Info size={14} />
               </a>
             )}
 
             {hasReplies && (
               <button
                 type="button"
-                className="header-action-btn"
-                title={isExpanded ? 'Свернуть ответы' : 'Развернуть ответы'}
+                className="tool-btn collapse-trigger"
+                title={isExpanded ? 'Свернуть ветку' : 'Развернуть ветку'}
                 onClick={() => setIsExpanded(!isExpanded)}
               >
-                {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                <span className="replies-count-tag">{comment.replies!.length}</span>
               </button>
             )}
 
-            {/* Votes Counter ↑ 0 ↓ */}
-            <div className="rating-badge">
+            {/* Voting Pill */}
+            <div className="vote-pill">
               <button
                 type="button"
-                className="vote-btn"
+                className="vote-arrow up"
                 onClick={() => setVotes(votes + 1)}
-                title="Голос вверх"
+                title="Нравится"
               >
-                <ChevronUp size={14} />
+                <ChevronUp size={13} />
               </button>
-              <span>{votes}</span>
+              <span className={`vote-value ${votes > 0 ? 'pos' : votes < 0 ? 'neg' : ''}`}>
+                {votes}
+              </span>
               <button
                 type="button"
-                className="vote-btn"
+                className="vote-arrow down"
                 onClick={() => setVotes(votes - 1)}
-                title="Голос вниз"
+                title="Не нравится"
               >
-                <ChevronDown size={14} />
+                <ChevronDown size={13} />
               </button>
             </div>
           </div>
         </div>
 
-        <div className="comment-card-body">
-          {/* Quote Block (Snippet of parent comment if nested reply) */}
+        {/* Comment Content */}
+        <div className="comment-body-area">
           {parentSnippet && (
-            <div className="comment-quote-block" title="Цитирование родительского сообщения">
+            <div className="modern-quote-bubble" title="Цитата">
               {parentSnippet}
             </div>
           )}
 
-          {/* Comment Text */}
           <div
-            className="comment-text-content-pdf"
+            className="modern-comment-html"
             dangerouslySetInnerHTML={{ __html: comment.text }}
           />
 
-          {/* Attachments Section */}
+          {/* Attachments */}
           {comment.attachments && comment.attachments.length > 0 && (
-            <div className="comment-attachments-grid">
+            <div className="comment-media-grid">
               {comment.attachments.map((att) => (
                 <div
                   key={att.id}
-                  className="attachment-item-card"
+                  className="media-thumb-chip"
                   onClick={() => onOpenAttachment(att)}
-                  title={`Открыть ${att.fileName}`}
+                  title={att.fileName}
                 >
                   {att.fileType === 'image' ? (
-                    <div className="image-thumbnail-box">
+                    <div className="media-image-box">
                       <img src={att.fileUrl} alt={att.fileName} />
-                      <span className="file-overlay-badge">
-                        <ImageIcon size={12} /> {(att.fileSize / 1024).toFixed(0)} KB
+                      <span className="media-overlay">
+                        <ImageIcon size={11} /> {(att.fileSize / 1024).toFixed(0)} KB
                       </span>
                     </div>
                   ) : (
-                    <div className="text-file-chip">
-                      <FileText size={16} />
-                      <span className="file-name">{att.fileName}</span>
+                    <div className="media-text-chip">
+                      <FileText size={15} />
+                      <span>{att.fileName}</span>
                     </div>
                   )}
                 </div>
@@ -161,9 +186,9 @@ export const CommentItem: React.FC<CommentItemProps> = ({
         </div>
       </div>
 
-      {/* Inline Reply Form */}
+      {/* Inline Reply Composer */}
       {isReplying && (
-        <div className="inline-reply-container">
+        <div className="inline-reply-wrapper">
           <CommentForm
             parentCommentId={comment.id}
             parentUsername={username}
@@ -176,9 +201,9 @@ export const CommentItem: React.FC<CommentItemProps> = ({
         </div>
       )}
 
-      {/* Nested Replies Recursive Subtree */}
+      {/* Nested Replies */}
       {hasReplies && isExpanded && (
-        <div className="nested-replies-tree">
+        <div className="modern-subtree">
           {comment.replies!.map((reply) => (
             <CommentItem
               key={reply.id}

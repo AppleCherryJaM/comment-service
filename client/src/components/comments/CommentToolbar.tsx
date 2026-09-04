@@ -1,5 +1,5 @@
 import React from 'react';
-import { Italic, Bold, Code, Link as LinkIcon, Eye } from 'lucide-react';
+import { Italic, Bold, Code, Link2, Eye } from 'lucide-react';
 
 interface CommentToolbarProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -46,49 +46,50 @@ export const CommentToolbar: React.FC<CommentToolbarProps> = ({
   };
 
   return (
-    <div className="comment-toolbar">
-      <div className="toolbar-group">
+    <div className="comment-toolbar-minimal">
+      <div className="toolbar-actions-left">
         <button
           type="button"
-          className="toolbar-btn"
-          onClick={() => insertTag('i')}
-          title="Курсив [<i>]"
-        >
-          <Italic size={15} /> <span>i</span>
-        </button>
-        <button
-          type="button"
-          className="toolbar-btn"
+          className="toolbar-icon-btn"
           onClick={() => insertTag('strong')}
-          title="Жирный [<strong>]"
+          title="Жирный текст (strong)"
         >
-          <Bold size={15} /> <span>strong</span>
+          <Bold size={15} />
         </button>
         <button
           type="button"
-          className="toolbar-btn"
+          className="toolbar-icon-btn"
+          onClick={() => insertTag('i')}
+          title="Курсив (i)"
+        >
+          <Italic size={15} />
+        </button>
+        <button
+          type="button"
+          className="toolbar-icon-btn"
           onClick={() => insertTag('code')}
-          title="Код [<code>]"
+          title="Фрагмент кода (code)"
         >
-          <Code size={15} /> <span>code</span>
+          <Code size={15} />
         </button>
         <button
           type="button"
-          className="toolbar-btn"
+          className="toolbar-icon-btn"
           onClick={handleLinkTag}
-          title="Ссылка [<a href=...>]"
+          title="Вставить ссылку (a)"
         >
-          <LinkIcon size={15} /> <span>a</span>
+          <Link2 size={15} />
         </button>
       </div>
 
       <button
         type="button"
-        className="toolbar-btn preview-btn"
+        className="toolbar-preview-btn"
         onClick={onPreviewClick}
-        title="Предпросмотр комментария"
+        title="Предпросмотр форматирования"
       >
-        <Eye size={15} /> <span>Предпросмотр</span>
+        <Eye size={14} />
+        <span>Превью</span>
       </button>
     </div>
   );

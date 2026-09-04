@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpDown, ArrowUp, ArrowDown, Filter } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageCircle } from 'lucide-react';
 
 interface CommentSortHeaderProps {
   sortBy: 'name' | 'email' | 'created_at';
@@ -22,51 +22,49 @@ export const CommentSortHeader: React.FC<CommentSortHeaderProps> = ({
     }
   };
 
-  const renderSortIcon = (field: 'name' | 'email' | 'created_at') => {
-    if (sortBy !== field) {
-      return <ArrowUpDown size={14} className="sort-icon-neutral" />;
-    }
+  const renderSortIndicator = (field: 'name' | 'email' | 'created_at') => {
+    if (sortBy !== field) return null;
     return sortOrder === 'ASC' ? (
-      <ArrowUp size={14} className="sort-icon-active" />
+      <ArrowUp size={13} className="sort-dir-icon" />
     ) : (
-      <ArrowDown size={14} className="sort-icon-active" />
+      <ArrowDown size={13} className="sort-dir-icon" />
     );
   };
 
   return (
-    <div className="comment-sort-header">
-      <div className="total-comments-badge">
-        <Filter size={16} />
-        <span>Всего главных комментариев: <strong>{totalComments}</strong></span>
+    <div className="modern-sort-header">
+      <div className="sort-header-title">
+        <MessageCircle size={18} className="title-icon" />
+        <span className="title-text">Обсуждение</span>
+        <span className="title-count">{totalComments}</span>
       </div>
 
-      <div className="sort-controls">
-        <span className="sort-label">Сортировка:</span>
+      <div className="sort-segmented-control">
         <button
           type="button"
-          className={`sort-pill ${sortBy === 'created_at' ? 'active' : ''}`}
+          className={`sort-tab-btn ${sortBy === 'created_at' ? 'active' : ''}`}
           onClick={() => handleSortClick('created_at')}
         >
-          <span>Дата добавления</span>
-          {renderSortIcon('created_at')}
+          <span>Новые</span>
+          {renderSortIndicator('created_at')}
         </button>
 
         <button
           type="button"
-          className={`sort-pill ${sortBy === 'name' ? 'active' : ''}`}
+          className={`sort-tab-btn ${sortBy === 'name' ? 'active' : ''}`}
           onClick={() => handleSortClick('name')}
         >
-          <span>Имя пользователя</span>
-          {renderSortIcon('name')}
+          <span>По имени</span>
+          {renderSortIndicator('name')}
         </button>
 
         <button
           type="button"
-          className={`sort-pill ${sortBy === 'email' ? 'active' : ''}`}
+          className={`sort-tab-btn ${sortBy === 'email' ? 'active' : ''}`}
           onClick={() => handleSortClick('email')}
         >
-          <span>E-mail</span>
-          {renderSortIcon('email')}
+          <span>По email</span>
+          {renderSortIndicator('email')}
         </button>
       </div>
     </div>
