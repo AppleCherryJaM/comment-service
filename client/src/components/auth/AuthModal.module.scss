@@ -1,46 +1,6 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
-  @include flex-center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal {
-  background: #ffffff;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-lg;
-  width: 100%;
-  max-width: 440px;
-  box-shadow: $shadow-lg;
-  overflow: hidden;
-}
-
-.header {
-  @include flex-between;
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid $border-subtle;
-
-  .closeBtn {
-    background: none;
-    border: none;
-    color: $text-faint;
-    cursor: pointer;
-    display: flex;
-    padding: 2px;
-    border-radius: 4px;
-
-    &:hover {
-      color: $text-main;
-    }
-  }
-}
-
 .tabs {
   display: flex;
   gap: 1rem;
@@ -68,10 +28,6 @@
     color: $primary;
     border-bottom-color: $primary;
   }
-}
-
-.body {
-  padding: 1.25rem;
 }
 
 .errorAlert {
@@ -106,23 +62,14 @@
   @include input-field;
 }
 
-.footer {
-  @include flex-between;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.85rem 1.25rem;
-  border-top: 1px solid $border-subtle;
-  background: $bg-subtle;
+.cancelBtn {
+  @include btn-secondary;
+  padding: 0.42rem 0.9rem;
+  font-size: 0.85rem;
+}
 
-  .cancelBtn {
-    @include btn-secondary;
-    padding: 0.42rem 0.9rem;
-    font-size: 0.85rem;
-  }
-
-  .submitBtn {
-    @include btn-primary;
-    padding: 0.42rem 1rem;
-    font-size: 0.85rem;
-  }
+.submitBtn {
+  @include btn-primary;
+  padding: 0.42rem 1rem;
+  font-size: 0.85rem;
 }

@@ -1,90 +1,19 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(6px);
-  @include flex-center;
-  z-index: 1000;
-  padding: 1rem;
-}
+.actionBtn {
+  background: none;
+  border: none;
+  color: $text-faint;
+  cursor: pointer;
+  display: flex;
+  padding: 3px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
 
-.modal {
-  background: #ffffff;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-lg;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: $shadow-lg;
-  overflow: hidden;
-
-  &.imageModal {
-    max-width: 800px;
-    background: #0f172a;
-    border-color: #334155;
-
-    .header {
-      background: #0f172a;
-      border-color: #334155;
-      color: #ffffff;
-
-      .title {
-        color: #ffffff;
-      }
-
-      .actionBtn,
-      .closeBtn {
-        color: #94a3b8;
-
-        &:hover {
-          color: #ffffff;
-        }
-      }
-    }
-  }
-}
-
-.header {
-  @include flex-between;
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid $border-subtle;
-
-  .title {
-    font-size: 0.9rem;
-    font-weight: 600;
+  &:hover {
     color: $text-main;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
-
-  .actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .actionBtn,
-  .closeBtn {
-    background: none;
-    border: none;
-    color: $text-faint;
-    cursor: pointer;
-    display: flex;
-    padding: 3px;
-    border-radius: 4px;
-    transition: color 0.15s ease;
-
-    &:hover {
-      color: $text-main;
-    }
-  }
-}
-
-.body {
-  padding: 1rem;
 }
 
 .imageWrapper {

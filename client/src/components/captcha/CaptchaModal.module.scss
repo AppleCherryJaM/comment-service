@@ -1,81 +1,6 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
-  @include flex-center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal {
-  background: #ffffff;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-lg;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: $shadow-lg;
-  overflow: hidden;
-  animation: fadeIn 0.15s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.header {
-  @include flex-between;
-  padding: 0.95rem 1.25rem;
-  border-bottom: 1px solid $border-subtle;
-
-  .titleGroup {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    .icon {
-      color: $primary;
-    }
-
-    .title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: $text-main;
-    }
-  }
-
-  .closeBtn {
-    background: none;
-    border: none;
-    color: $text-faint;
-    cursor: pointer;
-    display: flex;
-    padding: 2px;
-    border-radius: 4px;
-
-    &:hover {
-      color: $text-main;
-    }
-  }
-}
-
-.body {
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
 .subtitle {
   font-size: 0.82rem;
   color: $text-muted;
@@ -91,6 +16,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.65rem;
+  margin-top: 0.5rem;
 }
 
 .captchaPreviewRow {
@@ -215,23 +141,14 @@
   font-size: 0.78rem;
 }
 
-.footer {
-  @include flex-between;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.85rem 1.25rem;
-  border-top: 1px solid $border-subtle;
-  background: $bg-subtle;
+.cancelBtn {
+  @include btn-secondary;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.85rem;
+}
 
-  .cancelBtn {
-    @include btn-secondary;
-    padding: 0.45rem 0.95rem;
-    font-size: 0.85rem;
-  }
-
-  .submitBtn {
-    @include btn-primary;
-    padding: 0.45rem 1.1rem;
-    font-size: 0.85rem;
-  }
+.submitBtn {
+  @include btn-primary;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.85rem;
 }
