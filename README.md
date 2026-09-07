@@ -73,6 +73,7 @@ docker-compose up --build
    ```bash
    cd server
    npm install --legacy-peer-deps
+   npm run seed       # Заполнение БД тестовыми авторами и каскадными комментариями
    npm run start:dev
    ```
 

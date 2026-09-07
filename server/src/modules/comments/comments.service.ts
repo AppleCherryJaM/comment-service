@@ -205,7 +205,7 @@ export class CommentsService {
       where: {
         root_comment_id: In(rootIds),
       },
-      relations: { user: true },
+      relations: { user: true, parent_comment: true },
       order: {
         created_at: 'ASC',
       },
