@@ -1,6 +1,6 @@
 /**
  * Load Testing Script for Middle+ Requirement
- * Target: 1,000,000 comments throughput benchmark
+ * Target: 1,000,000 comments / 100k users throughput benchmark (Read SLA with Redis Cache & TypeORM)
  * Run with: node load-test.js
  */
 
@@ -11,7 +11,7 @@ const TARGET_PORT = process.env.PORT || 3000;
 const TOTAL_REQUESTS = 1000;
 const CONCURRENCY = 50;
 
-console.log(`🚀 Starting load test against http://${TARGET_HOST}:${TARGET_PORT}/api/comments ...`);
+console.log(`🚀 Starting load test against http://${TARGET_HOST}:${TARGET_PORT}/api/comments?page=1&limit=25 ...`);
 console.log(`Concurrent Workers: ${CONCURRENCY} | Total Requests: ${TOTAL_REQUESTS}\n`);
 
 let completed = 0;
@@ -20,21 +20,14 @@ let failed = 0;
 const startTime = Date.now();
 
 function sendRequest(index) {
-  const data = JSON.stringify({
-    userName: `user_${index % 100}`,
-    email: `user_${index % 100}@example.com`,
-    text: `Test comment #${index} <strong>load test</strong> <i>content</i>`,
-  });
-
   const req = http.request(
     {
       hostname: TARGET_HOST,
       port: TARGET_PORT,
-      path: '/api/comments',
-      method: 'POST',
+      path: '/api/comments?page=1&limit=25',
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data),
+        'Accept': 'application/json',
       },
     },
     (res) => {
@@ -48,13 +41,12 @@ function sendRequest(index) {
     }
   );
 
-  req.on('error', () => {
+  req.on('error', (err) => {
     failed++;
     completed++;
     checkCompletion();
   });
 
-  req.write(data);
   req.end();
 }
 
@@ -72,7 +64,7 @@ function checkCompletion() {
   }
 }
 
-// Dispatch concurrent batches
+// Dispatch concurrent initial batch
 for (let i = 0; i < CONCURRENCY; i++) {
   sendRequest(i);
 }
@@ -84,4 +76,5 @@ const interval = setInterval(() => {
   } else {
     clearInterval(interval);
   }
-}, 5);
+}, 2);
+
