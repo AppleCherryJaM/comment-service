@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: comments_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: comments_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: comments_redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: comments_server
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres_password
+      DB_DATABASE: comments_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      UPLOAD_DIR: ./uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/app/uploads
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: comments_client
+    restart: always
+    ports:
+      - '80:80'
+    depends_on:
+      - server
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
