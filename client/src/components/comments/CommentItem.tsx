@@ -167,32 +167,54 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           />
 
           {/* Attachments */}
-          {comment.attachments && comment.attachments.length > 0 && (
-            <div className={styles.mediaGrid}>
-              {comment.attachments.map((att) => (
-                <div
-                  key={att.id}
-                  className={styles.mediaThumbChip}
-                  onClick={() => onOpenAttachment(att)}
-                  title={att.fileName}
-                >
-                  {att.fileType === 'image' ? (
-                    <div className={styles.imageBox}>
-                      <img src={att.fileUrl} alt={att.fileName} />
-                      <span className={styles.overlay}>
-                        <ImageIcon size={11} /> {(att.fileSize / 1024).toFixed(0)} KB
-                      </span>
-                    </div>
-                  ) : (
-                    <div className={styles.textChip}>
-                      <FileText size={15} />
-                      <span>{att.fileName}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          {(() => {
+            const mediaAttachments: Attachment[] =
+              comment.attachments && comment.attachments.length > 0
+                ? comment.attachments
+                : comment.file_url
+                  ? [
+                      {
+                        id: comment.id,
+                        fileName: comment.file_url.split('/').pop() || 'прикрепленный файл',
+                        fileUrl: comment.file_url,
+                        fileType:
+                          comment.file_type === 'IMAGE' || (comment.file_type as any) === 'image'
+                            ? 'image'
+                            : 'text',
+                        fileSize: 0,
+                      },
+                    ]
+                  : [];
+
+            if (mediaAttachments.length === 0) return null;
+
+            return (
+              <div className={styles.mediaGrid}>
+                {mediaAttachments.map((att) => (
+                  <div
+                    key={att.id}
+                    className={styles.mediaThumbChip}
+                    onClick={() => onOpenAttachment(att)}
+                    title={att.fileName}
+                  >
+                    {att.fileType === 'image' ? (
+                      <div className={styles.imageBox}>
+                        <img src={att.fileUrl} alt={att.fileName} />
+                        <span className={styles.overlay}>
+                          <ImageIcon size={11} /> {att.fileSize > 0 ? `${(att.fileSize / 1024).toFixed(0)} KB` : 'Превью'}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className={styles.textChip}>
+                        <FileText size={15} />
+                        <span>{att.fileName}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
