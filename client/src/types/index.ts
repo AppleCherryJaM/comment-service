@@ -31,6 +31,8 @@ export interface Comment {
   createdAt?: string; // Fallback helper
   user?: User | null;
   attachments?: Attachment[];
+  file_url?: string;
+  file_type?: string;
   replies?: Comment[];
   replies_count?: number;
 }
@@ -72,6 +74,8 @@ export interface CreateCommentPayload {
   captchaId?: string;
   captchaCode?: string;
   attachmentIds?: string[];
+  fileUrl?: string;
+  fileType?: string;
 }
 
 export interface AuthResponse {

@@ -114,8 +114,8 @@ export class CommentsService {
     }
 
     // 5. Handle File Attachment
-    let fileUrl: string | undefined;
-    let fileType: any;
+    let fileUrl: string | undefined = dto.fileUrl;
+    let fileType: any = dto.fileType;
 
     if (file) {
       const processed = await this.attachmentsService.processAndSaveFile(file);
