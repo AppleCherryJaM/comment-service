@@ -81,6 +81,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
   const sendComment = async (captchaId?: string, captchaCode?: string) => {
     setIsSubmitting(true);
     try {
+      const firstAttachment = attachments[0];
       const payload: CreateCommentPayload = {
         userName: currentUserName,
         email: currentUserEmail,
@@ -90,6 +91,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({
         captchaId: !isAuthenticated ? captchaId : undefined,
         captchaCode: !isAuthenticated ? captchaCode : undefined,
         attachmentIds: attachments.map((a) => a.id),
+        fileUrl: firstAttachment ? firstAttachment.fileUrl : undefined,
+        fileType: firstAttachment ? (firstAttachment.fileType === 'image' ? 'IMAGE' : 'TXT') : undefined,
       };
 
       await commentsService.createComment(payload);

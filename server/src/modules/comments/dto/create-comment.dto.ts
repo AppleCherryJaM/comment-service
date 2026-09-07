@@ -31,7 +31,10 @@ export class CreateCommentDto {
   @IsUrl()
   homePage?: string;
 
-  @ApiProperty({ description: 'Captcha ID returned by GET /api/captcha', required: false })
+  @ApiProperty({
+    description: 'Captcha ID returned by GET /api/captcha',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   captchaId?: string;
@@ -53,4 +56,17 @@ export class CreateCommentDto {
   @IsOptional()
   @IsUUID()
   parentCommentId?: string;
+
+  @ApiProperty({
+    description: 'File URL if file was uploaded',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  fileUrl?: string;
+
+  @ApiProperty({ description: 'File type (IMAGE or TXT)', required: false })
+  @IsOptional()
+  @IsString()
+  fileType?: string;
 }
