@@ -19,6 +19,7 @@ interface CommentItemProps {
   onRefresh: () => void;
   onOpenAttachment: (att: Attachment) => void;
   depth?: number;
+  parentCommentText?: string;
 }
 
 // Generate consistent avatar color based on username
@@ -38,11 +39,19 @@ function getAvatarGradient(name: string): string {
   return gradients[Math.abs(hash) % gradients.length];
 }
 
+const extractPlainTextSnippet = (rawHtml?: string): string | null => {
+  if (!rawHtml) return null;
+  const cleanText = rawHtml.replace(/<[^>]*>/g, '').trim();
+  if (!cleanText) return null;
+  return cleanText.length > 85 ? `${cleanText.substring(0, 85)}...` : cleanText;
+};
+
 export const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   onRefresh,
   onOpenAttachment,
   depth = 0,
+  parentCommentText,
 }) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
@@ -55,9 +64,8 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   const initialLetter = username.charAt(0).toUpperCase();
   const avatarGradient = getAvatarGradient(username);
 
-  const parentSnippet = comment.parent_comment_id
-    ? 'Внезапно, тщательные исследования конкурентов, которые представляют собой яркий пример...'
-    : null;
+  const rawParentText = comment.parent_comment?.text || parentCommentText;
+  const parentSnippet = comment.parent_comment_id ? extractPlainTextSnippet(rawParentText) : null;
 
   return (
     <div className={styles.commentNode}>
@@ -213,6 +221,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
               onRefresh={onRefresh}
               onOpenAttachment={onOpenAttachment}
               depth={depth + 1}
+              parentCommentText={comment.text}
             />
           ))}
         </div>

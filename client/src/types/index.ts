@@ -25,6 +25,7 @@ export interface Comment {
   homePage?: string; // Fallback helper
   text: string;
   parent_comment_id?: string | null;
+  parent_comment?: Comment | null;
   root_comment_id?: string | null;
   created_at: string;
   createdAt?: string; // Fallback helper
