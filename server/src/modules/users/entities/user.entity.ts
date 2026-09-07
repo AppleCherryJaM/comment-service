@@ -15,18 +15,21 @@ export class User {
   id: string;
 
   @Index({ unique: true })
-  @Column({ type: 'varchar', length: 100, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   name: string;
 
   @Index({ unique: true })
-  @Column({ type: 'varchar', length: 150, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  password: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  password?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   home_page?: string;
+
+  @Column({ type: 'boolean', default: true })
+  is_guest: boolean;
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];

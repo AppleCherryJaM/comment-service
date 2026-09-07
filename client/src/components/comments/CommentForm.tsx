@@ -3,10 +3,11 @@ import { Send, Paperclip, X, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { commentsService } from '../../services/commentsService';
 import { validateXHTML } from '../../utils/xhtmlValidator';
-import { CaptchaWidget } from '../captcha/CaptchaWidget';
+import { CaptchaModal } from '../captcha/CaptchaModal';
 import { CommentToolbar } from './CommentToolbar';
 import { CommentPreviewModal } from './CommentPreviewModal';
 import type { Attachment, CreateCommentPayload } from '../../types';
+import styles from './CommentForm.module.scss';
 
 interface CommentFormProps {
   parentCommentId?: string;
@@ -28,8 +29,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
   const [homePage, setHomePage] = useState<string>(user?.home_page || user?.homePage || '');
   const [text, setText] = useState<string>('');
 
-  const [captchaId, setCaptchaId] = useState<string>('');
-  const [captchaCode, setCaptchaCode] = useState<string>('');
+  const [isCaptchaModalOpen, setIsCaptchaModalOpen] = useState<boolean>(false);
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -78,23 +78,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({
     setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-
-    const xhtmlCheck = validateXHTML(text);
-    if (!xhtmlCheck.isValid) {
-      setFormError(xhtmlCheck.error || 'Ошибка в XHTML тегах.');
-      return;
-    }
-
-    if (!isAuthenticated && (!captchaId || !captchaCode)) {
-      setFormError('Пожалуйста, введите код с капчи.');
-      return;
-    }
-
+  const sendComment = async (captchaId?: string, captchaCode?: string) => {
     setIsSubmitting(true);
-
     try {
       const payload: CreateCommentPayload = {
         userName: currentUserName,
@@ -110,159 +95,156 @@ export const CommentForm: React.FC<CommentFormProps> = ({
       await commentsService.createComment(payload);
 
       setText('');
-      setCaptchaCode('');
       setAttachments([]);
+      setIsCaptchaModalOpen(false);
 
       if (onSuccess) onSuccess();
     } catch (err: any) {
       const msg = err.response?.data?.message;
-      setFormError(Array.isArray(msg) ? msg.join(', ') : msg || 'Ошибка отправки комментария.');
+      const errorText = Array.isArray(msg) ? msg.join(', ') : msg || 'Ошибка отправки комментария.';
+      setFormError(errorText);
+      throw err;
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+
+    const xhtmlCheck = validateXHTML(text);
+    if (!xhtmlCheck.isValid) {
+      setFormError(xhtmlCheck.error || 'Ошибка в XHTML тегах.');
+      return;
+    }
+
+    if (!isAuthenticated) {
+      if (!currentUserName.trim()) {
+        setFormError('Укажите имя пользователя.');
+        return;
+      }
+      if (!currentUserEmail.trim()) {
+        setFormError('Укажите email.');
+        return;
+      }
+      setIsCaptchaModalOpen(true);
+      return;
+    }
+
+    await sendComment();
+  };
+
   return (
-    <form className={`comment-form ${parentCommentId ? 'reply-form' : ''}`} onSubmit={handleSubmit}>
+    <form className={`${styles.composer} ${parentCommentId ? styles.reply : ''}`} onSubmit={handleSubmit}>
       {parentCommentId && (
-        <div className="reply-header">
-          <span>Ответ на комментарий от <strong>{parentUsername || 'Пользователь'}</strong></span>
+        <div className={styles.replyHeader}>
+          <span>Ответ для <strong>{parentUsername || 'Пользователь'}</strong></span>
           {onCancel && (
-            <button type="button" className="cancel-reply-btn" onClick={onCancel}>
-              <X size={16} /> Отмена
+            <button type="button" className={styles.closeReplyBtn} onClick={onCancel} title="Отменить ответ">
+              <X size={15} />
             </button>
           )}
         </div>
       )}
 
       {formError && (
-        <div className="form-error-alert">
-          <AlertCircle size={18} />
+        <div className={styles.alert}>
+          <AlertCircle size={15} />
           <span>{formError}</span>
         </div>
       )}
 
-      <div className="form-inputs-grid">
-        <div className="form-group">
-          <label className="field-label">
-            Имя <span className="required">*</span>
-          </label>
+      {/* Guest Authorship Fields */}
+      {!isAuthenticated && (
+        <div className={styles.guestRow}>
           <input
             type="text"
-            className="input-field"
-            placeholder="ИванИванов (только латиница и цифры)"
+            className={styles.guestInput}
+            placeholder="Ваше имя *"
             value={currentUserName}
             onChange={(e) => setUsername(e.target.value)}
-            disabled={isAuthenticated}
             required
             pattern="[a-zA-Z0-9]+"
             title="Только латинские буквы и цифры"
           />
-        </div>
-
-        <div className="form-group">
-          <label className="field-label">
-            E-mail <span className="required">*</span>
-          </label>
           <input
             type="email"
-            className="input-field"
-            placeholder="name@example.com"
+            className={styles.guestInput}
+            placeholder="E-mail *"
             value={currentUserEmail}
             onChange={(e) => setEmail(e.target.value)}
-            disabled={isAuthenticated}
             required
           />
-        </div>
-
-        <div className="form-group">
-          <label className="field-label">Домашняя страница</label>
           <input
             type="url"
-            className="input-field"
-            placeholder="https://example.com"
+            className={styles.guestInput}
+            placeholder="Сайт (опционально)"
             value={homePage}
             onChange={(e) => setHomePage(e.target.value)}
           />
         </div>
-      </div>
+      )}
 
-      <div className="form-group text-group">
-        <label className="field-label">
-          Текст комментария <span className="required">*</span>
-        </label>
-        <CommentToolbar
-          textareaRef={textareaRef}
-          text={text}
-          setText={setText}
-          onPreviewClick={() => setIsPreviewOpen(true)}
-        />
+      {/* Textarea Area */}
+      <div className={styles.editorBox}>
         <textarea
           ref={textareaRef}
-          className="textarea-field"
-          rows={4}
-          placeholder="Напишите ваш комментарий... Разрешены теги: <i>, <strong>, <code>, <a href='...'>"
+          className={styles.textarea}
+          rows={3}
+          placeholder="Напишите комментарий... (поддерживаются теги: <i>, <strong>, <code>, <a href='...'>)"
           value={text}
           onChange={(e) => setText(e.target.value)}
           required
         />
-      </div>
 
-      {/* Guest Captcha */}
-      {!isAuthenticated && (
-        <CaptchaWidget
-          captchaCode={captchaCode}
-          onCaptchaChange={(id, code) => {
-            setCaptchaId(id);
-            setCaptchaCode(code);
-          }}
-        />
-      )}
-
-      {/* File Attachment Dropzone & List */}
-      <div className="attachments-section">
-        <div className="attach-btn-wrapper">
-          <label className={`btn btn-secondary attach-btn ${isUploading ? 'loading' : ''}`}>
-            <Paperclip size={16} />
-            <span>{isUploading ? 'Загрузка...' : 'Прикрепить файл'}</span>
-            <input
-              type="file"
-              onChange={handleFileUpload}
-              accept=".jpg,.jpeg,.png,.gif,.txt"
-              style={{ display: 'none' }}
-              disabled={isUploading}
-            />
-          </label>
-          <span className="file-info-hint">Изображения (JPG, PNG, GIF) или TXT (&lt; 100 KB)</span>
-        </div>
-
+        {/* Attachment Chips */}
         {attachments.length > 0 && (
-          <div className="attached-files-list">
+          <div className={styles.attachedChips}>
             {attachments.map((att) => (
-              <div key={att.id} className="attachment-badge">
-                <span>{att.fileType === 'image' ? '🖼️' : '📄'} {att.fileName}</span>
-                <button
-                  type="button"
-                  className="remove-attach-btn"
-                  onClick={() => removeAttachment(att.id)}
-                >
-                  <X size={14} />
+              <span key={att.id} className={styles.chip}>
+                {att.fileType === 'image' ? '🖼️' : '📄'} {att.fileName}
+                <button type="button" onClick={() => removeAttachment(att.id)}>
+                  <X size={12} />
                 </button>
-              </div>
+              </span>
             ))}
           </div>
         )}
-      </div>
 
-      <div className="form-actions">
-        <button
-          type="submit"
-          className="btn btn-primary submit-btn"
-          disabled={isSubmitting || !text.trim()}
-        >
-          <Send size={16} />
-          <span>{isSubmitting ? 'Отправка...' : 'Опубликовать'}</span>
-        </button>
+        {/* Action Bar Inside Box */}
+        <div className={styles.bottomBar}>
+          <div className={styles.bottomLeft}>
+            <CommentToolbar
+              textareaRef={textareaRef}
+              text={text}
+              setText={setText}
+              onPreviewClick={() => setIsPreviewOpen(true)}
+            />
+
+            <label className={`${styles.attachBtn} ${isUploading ? styles.uploading : ''}`} title="Прикрепить изображение или TXT">
+              <Paperclip size={15} />
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                accept=".jpg,.jpeg,.png,.gif,.txt"
+                style={{ display: 'none' }}
+                disabled={isUploading}
+              />
+            </label>
+          </div>
+
+          <div className={styles.bottomRight}>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isSubmitting || !text.trim()}
+            >
+              <Send size={14} />
+              <span>{isSubmitting ? 'Отправка...' : 'Отправить'}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Live Preview Modal */}
@@ -273,6 +255,16 @@ export const CommentForm: React.FC<CommentFormProps> = ({
         email={currentUserEmail}
         text={text}
         attachments={attachments}
+      />
+
+      {/* Security Captcha Modal for Guests */}
+      <CaptchaModal
+        isOpen={isCaptchaModalOpen}
+        onClose={() => setIsCaptchaModalOpen(false)}
+        onConfirm={async (captchaId, captchaCode) => {
+          await sendComment(captchaId, captchaCode);
+        }}
+        isSubmitting={isSubmitting}
       />
     </form>
   );

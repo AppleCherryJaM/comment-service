@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { MessageSquare, LogIn, LogOut, Wifi, WifiOff } from 'lucide-react';
+import { LogIn, LogOut, Wifi, WifiOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { AuthModal } from '../auth/AuthModal';
+import styles from './Header.module.scss';
 
 export const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -13,22 +14,24 @@ export const Header: React.FC = () => {
   const initialLetter = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="app-header">
-      <div className="header-container">
-        <div className="brand-block">
-          <div className="brand-logo">
-            <MessageSquare size={22} />
-          </div>
-          <div className="brand-info">
-            <h1 className="brand-title">Dzencode Comments</h1>
-            <span className="brand-subtitle">SPA Комментарии с каскадным деревом</span>
+    <header className={styles.header}>
+      <div className={styles.container}>
+        <div className={styles.brand}>
+          <img
+            src="/cta_logo_badge_dark.svg"
+            alt="CTA Logo"
+            className={styles.brandLogo}
+          />
+          <div className={styles.brandInfo}>
+            <h1 className={styles.brandTitle}>Dzencode Comments</h1>
+            <span className={styles.brandSubtitle}>SPA Комментарии с каскадным деревом</span>
           </div>
         </div>
 
-        <div className="header-actions">
+        <div className={styles.actions}>
           {/* Socket Connection Badge */}
           <div
-            className={`socket-status-badge ${isConnected ? 'online' : 'offline'}`}
+            className={`${styles.socketBadge} ${isConnected ? styles.online : styles.offline}`}
             title={isConnected ? 'WebSocket подключён' : 'WebSocket отключён'}
           >
             {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
@@ -37,12 +40,12 @@ export const Header: React.FC = () => {
 
           {/* User Auth Section */}
           {isAuthenticated && user ? (
-            <div className="user-profile-badge">
-              <div className="user-avatar-circle">{initialLetter}</div>
-              <span className="user-display-name">{displayName}</span>
+            <div className={styles.userBadge}>
+              <div className={styles.userBadgeAvatar}>{initialLetter}</div>
+              <span className={styles.userBadgeName}>{displayName}</span>
               <button
                 type="button"
-                className="logout-btn"
+                className={styles.userBadgeLogout}
                 onClick={logout}
                 title="Выйти из аккаунта"
               >
@@ -52,10 +55,10 @@ export const Header: React.FC = () => {
           ) : (
             <button
               type="button"
-              className="btn btn-primary auth-trigger-btn"
+              className={styles.authBtn}
               onClick={() => setIsAuthModalOpen(true)}
             >
-              <LogIn size={16} /> <span>Войти / Регистрация</span>
+              <LogIn size={15} /> <span>Войти / Регистрация</span>
             </button>
           )}
         </div>

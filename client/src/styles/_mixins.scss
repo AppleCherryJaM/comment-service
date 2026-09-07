@@ -1,0 +1,102 @@
+@use './variables' as *;
+
+// Common Mixins
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin card-surface {
+  background: $bg-surface;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  box-shadow: $shadow-xs;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: $border-medium;
+    box-shadow: $shadow-sm;
+  }
+}
+
+@mixin btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-family: inherit;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  border-radius: $radius-sm;
+  transition: all 0.15s ease;
+  user-select: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin btn-primary {
+  @include btn-base;
+  background: $primary;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba($primary, 0.25);
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba($primary, 0.3);
+  }
+}
+
+@mixin btn-secondary {
+  @include btn-base;
+  background: #ffffff;
+  color: $text-main;
+  border: 1px solid $border-subtle;
+
+  &:hover:not(:disabled) {
+    background: $bg-subtle;
+    border-color: $border-medium;
+  }
+}
+
+@mixin input-field {
+  width: 100%;
+  background: $bg-subtle;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-sm;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: $text-main;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder {
+    color: $text-faint;
+  }
+
+  &:focus {
+    background: #ffffff;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+}
+
+@mixin mobile {
+  @media (max-width: 640px) {
+    @content;
+  }
+}

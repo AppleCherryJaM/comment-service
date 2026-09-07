@@ -1,0 +1,80 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.header {
+  @include flex-between;
+  padding: 0.5rem 0 1rem 0;
+  margin-bottom: 0.75rem;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  .icon {
+    color: $text-muted;
+  }
+
+  .text {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: $text-main;
+  }
+
+  .count {
+    background: $bg-subtle;
+    color: $text-muted;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.1rem 0.45rem;
+    border-radius: $radius-full;
+    border: 1px solid $border-subtle;
+  }
+}
+
+.segmentedControl {
+  display: flex;
+  background: $bg-subtle;
+  padding: 3px;
+  border-radius: $radius-md;
+  border: 1px solid $border-subtle;
+  gap: 2px;
+}
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: $text-muted;
+  padding: 0.25rem 0.65rem;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: $text-main;
+  }
+
+  &.active {
+    background: #ffffff;
+    color: $primary;
+    font-weight: 600;
+    box-shadow: $shadow-xs;
+  }
+
+  .dirIcon {
+    stroke-width: 2.5;
+  }
+}

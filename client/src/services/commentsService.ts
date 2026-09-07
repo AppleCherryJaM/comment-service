@@ -9,10 +9,26 @@ import type {
 
 export const commentsService = {
   async getComments(params?: GetCommentsParams): Promise<PaginatedCommentsResponse> {
-    const response = await apiClient.get<PaginatedCommentsResponse>('/comments', {
+    const response = await apiClient.get<any>('/comments', {
       params,
     });
-    return response.data;
+    const res = response.data;
+    const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+    const meta = res?.meta || {
+      total: items.length,
+      page: params?.page || 1,
+      limit: params?.limit || 25,
+      totalPages: Math.ceil(items.length / (params?.limit || 25)),
+    };
+
+    return {
+      data: items,
+      meta,
+      total: meta.total ?? items.length,
+      page: meta.page ?? 1,
+      limit: meta.limit ?? 25,
+      totalPages: meta.totalPages ?? 0,
+    };
   },
 
   async createComment(payload: CreateCommentPayload): Promise<Comment> {

@@ -8,6 +8,7 @@
     "build:server": "cd server && npm run build",
     "build:client": "cd client && npm run build",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "test:load": "node load-test.js"
   }
 }

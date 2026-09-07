@@ -25,6 +25,7 @@ export interface Comment {
   homePage?: string; // Fallback helper
   text: string;
   parent_comment_id?: string | null;
+  parent_comment?: Comment | null;
   root_comment_id?: string | null;
   created_at: string;
   createdAt?: string; // Fallback helper
@@ -34,18 +35,26 @@ export interface Comment {
   replies_count?: number;
 }
 
-export interface PaginatedCommentsResponse {
-  data: Comment[];
+export interface CommentPaginationMeta {
   total: number;
   page: number;
   limit: number;
   totalPages: number;
 }
 
+export interface PaginatedCommentsResponse {
+  data: Comment[];
+  meta?: CommentPaginationMeta;
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+}
+
 export interface GetCommentsParams {
   page?: number;
   limit?: number;
-  sortBy?: 'user_name' | 'username' | 'email' | 'created_at' | 'createdAt';
+  sortBy?: 'name' | 'email' | 'created_at';
   sortOrder?: 'ASC' | 'DESC';
 }
 

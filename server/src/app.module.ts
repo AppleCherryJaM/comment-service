@@ -17,6 +17,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { CaptchaModule } from './modules/captcha/captcha.module';
 import { AttachmentsModule } from './modules/attachments/attachments.module';
 import { EventsModule } from './modules/events/events.module';
+import { QueueModule } from './modules/queues/queue.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EventsModule } from './modules/events/events.module';
     CaptchaModule,
     AttachmentsModule,
     EventsModule,
+    QueueModule,
   ],
 })
 export class AppModule {}

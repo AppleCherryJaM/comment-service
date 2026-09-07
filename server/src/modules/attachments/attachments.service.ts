@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { FileType } from '../comments/entities/comment.entity';
+import { ProcessAttachmentJobData } from '../queues/processors/attachments.processor';
 
 @Injectable()
 export class AttachmentsService {
@@ -85,4 +86,29 @@ export class AttachmentsService {
       throw new BadRequestException(`Failed to process image: ${err.message}`);
     }
   }
+
+  async processFileFromQueue(
+    data: ProcessAttachmentJobData,
+  ): Promise<{ fileUrl: string; fileType: FileType }> {
+    const fileBuffer = await fs.promises.readFile(data.tempFilePath);
+    const fakeMulterFile: Express.Multer.File = {
+      buffer: fileBuffer,
+      originalname: data.originalName,
+      mimetype: data.mimeType,
+      size: data.size,
+    } as any;
+
+    const result = await this.processAndSaveFile(fakeMulterFile);
+
+    try {
+      if (fs.existsSync(data.tempFilePath)) {
+        await fs.promises.unlink(data.tempFilePath);
+      }
+    } catch {
+      /* ignore cleanup error */
+    }
+
+    return result;
+  }
 }
+

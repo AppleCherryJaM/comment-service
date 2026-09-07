@@ -31,15 +31,15 @@ export class CreateCommentDto {
   @IsUrl()
   homePage?: string;
 
-  @ApiProperty({ description: 'Captcha ID returned by GET /api/captcha' })
+  @ApiProperty({ description: 'Captcha ID returned by GET /api/captcha', required: false })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  captchaId: string;
+  captchaId?: string;
 
-  @ApiProperty({ description: 'User input for captcha code' })
+  @ApiProperty({ description: 'User input for captcha code', required: false })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  captchaCode: string;
+  captchaCode?: string;
 
   @ApiProperty({ example: 'Hello <strong>World</strong>!' })
   @IsString()
