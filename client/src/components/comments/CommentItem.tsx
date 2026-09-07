@@ -49,7 +49,8 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   const [votes, setVotes] = useState<number>(0);
 
   const hasReplies = comment.replies && comment.replies.length > 0;
-  const username = comment.user_name || comment.username || 'Аноним';
+  const username = comment.user?.name || comment.user?.username || comment.user_name || comment.username || 'Аноним';
+  const homePage = comment.user?.home_page || comment.home_page || comment.homePage;
   const createdAt = comment.created_at || comment.createdAt || '';
   const initialLetter = username.charAt(0).toUpperCase();
   const avatarGradient = getAvatarGradient(username);
@@ -95,13 +96,13 @@ export const CommentItem: React.FC<CommentItemProps> = ({
               <span>Ответить</span>
             </button>
 
-            {comment.home_page && (
+            {homePage && (
               <a
-                href={comment.home_page}
+                href={homePage}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.toolBtn}
-                title={`Сайт: ${comment.home_page}`}
+                title={`Сайт: ${homePage}`}
               >
                 <Info size={14} />
               </a>
