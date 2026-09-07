@@ -76,13 +76,15 @@ export class CommentsService {
     dto: CreateCommentDto,
     file?: Express.Multer.File,
   ): Promise<Comment> {
-    // 1. Validate CAPTCHA
-    const isCaptchaValid = await this.captchaService.validateCaptcha(
-      dto.captchaId,
-      dto.captchaCode,
-    );
-    if (!isCaptchaValid) {
-      throw new BadRequestException('Invalid or expired CAPTCHA code');
+    // 1. Validate CAPTCHA (if captchaId is provided)
+    if (dto.captchaId && dto.captchaCode) {
+      const isCaptchaValid = await this.captchaService.validateCaptcha(
+        dto.captchaId,
+        dto.captchaCode,
+      );
+      if (!isCaptchaValid) {
+        throw new BadRequestException('Invalid or expired CAPTCHA code');
+      }
     }
 
     // 2. Validate & Sanitize XHTML text

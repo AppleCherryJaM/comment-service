@@ -61,7 +61,10 @@ export const CommentList: React.FC = () => {
   const totalComments = commentsData?.total ?? commentsData?.meta?.total ?? 0;
   const totalPages = commentsData?.totalPages ?? commentsData?.meta?.totalPages ?? 0;
   const notificationUsername =
-    newCommentNotification?.user_name || newCommentNotification?.username || 'Пользователь';
+    newCommentNotification?.user?.name ||
+    newCommentNotification?.user_name ||
+    newCommentNotification?.username ||
+    'Пользователь';
 
   return (
     <div className={styles.section}>
