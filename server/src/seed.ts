@@ -6,16 +6,27 @@ import { RefreshToken } from './modules/auth/entities/refresh-token.entity';
 
 dotenv.config();
 
-const AppDataSource = new DataSource({
-  type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT) || 5432,
-  username: process.env.DB_USERNAME || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  database: process.env.DB_DATABASE || 'comments_db',
-  entities: [User, Comment, RefreshToken],
-  synchronize: true,
-});
+const AppDataSource = new DataSource(
+  process.env.DATABASE_URL
+    ? {
+        type: 'postgres',
+        url: process.env.DATABASE_URL,
+        entities: [User, Comment, RefreshToken],
+        synchronize: true,
+        ssl: { rejectUnauthorized: false },
+      }
+    : {
+        type: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 5432,
+        username: process.env.DB_USERNAME || 'postgres',
+        password: process.env.DB_PASSWORD || 'postgres',
+        database: process.env.DB_DATABASE || 'comments_db',
+        entities: [User, Comment, RefreshToken],
+        synchronize: true,
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+      }
+);
 
 async function seed() {
   console.log('🌱 Starting database seed...');

@@ -37,16 +37,25 @@ export class CommentsService {
   ) {
     const isDev = process.env.NODE_ENV === 'development';
 
-    this.redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: Number(process.env.REDIS_PORT) || 6379,
+    const redisOptions = {
       maxRetriesPerRequest: 1,
       lazyConnect: true,
       enableOfflineQueue: false,
       retryStrategy: isDev
         ? () => null
-        : (times) => Math.min(times * 100, 3000),
-    });
+        : (times: number) => Math.min(times * 100, 3000),
+    };
+
+    if (process.env.REDIS_URL) {
+      this.redis = new Redis(process.env.REDIS_URL, redisOptions);
+    } else {
+      this.redis = new Redis({
+        host: process.env.REDIS_HOST || 'localhost',
+        port: Number(process.env.REDIS_PORT) || 6379,
+        password: process.env.REDIS_PASSWORD || undefined,
+        ...redisOptions,
+      });
+    }
 
     let hasLogged = false;
     this.redis.on('error', (err) => {
