@@ -36,41 +36,47 @@ export class CommentsService {
     private readonly commentsGateway: CommentsGateway,
   ) {
     const isDev = process.env.NODE_ENV === 'development';
+    const hasRedisEnv = !!(process.env.REDIS_URL || process.env.REDIS_HOST);
 
-    const redisOptions = {
-      maxRetriesPerRequest: 1,
-      lazyConnect: true,
-      enableOfflineQueue: false,
-      retryStrategy: isDev
-        ? () => null
-        : (times: number) => Math.min(times * 100, 3000),
-    };
+    if (hasRedisEnv || isDev) {
+      const redisOptions = {
+        maxRetriesPerRequest: 1,
+        lazyConnect: true,
+        enableOfflineQueue: false,
+        retryStrategy: isDev
+          ? () => null
+          : (times: number) => Math.min(times * 500, 5000),
+      };
 
-    if (process.env.REDIS_URL) {
-      this.redis = new Redis(process.env.REDIS_URL, redisOptions);
-    } else {
-      this.redis = new Redis({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: Number(process.env.REDIS_PORT) || 6379,
-        password: process.env.REDIS_PASSWORD || undefined,
-        ...redisOptions,
-      });
-    }
-
-    let hasLogged = false;
-    this.redis.on('error', (err) => {
-      if (!isDev) {
-        console.warn('⚠️ [Redis Comments Warning]:', err.message);
-      } else if (!hasLogged) {
-        hasLogged = true;
-        console.log(
-          'ℹ️ [Redis Comments]: Dev mode — Redis offline, caching disabled.',
-        );
+      if (process.env.REDIS_URL) {
+        this.redis = new Redis(process.env.REDIS_URL, redisOptions);
+      } else {
+        this.redis = new Redis({
+          host: process.env.REDIS_HOST || 'localhost',
+          port: Number(process.env.REDIS_PORT) || 6379,
+          password: process.env.REDIS_PASSWORD || undefined,
+          ...redisOptions,
+        });
       }
-    });
+
+      let hasLogged = false;
+      this.redis.on('error', (err) => {
+        if (!isDev) {
+          console.warn('⚠️ [Redis Comments Warning]:', err.message);
+        } else if (!hasLogged) {
+          hasLogged = true;
+          console.log(
+            'ℹ️ [Redis Comments]: Dev mode — Redis offline, caching disabled.',
+          );
+        }
+      });
+    } else {
+      this.redis = null as any;
+    }
   }
 
   private async getRedisConnection(): Promise<Redis | null> {
+    if (!this.redis) return null;
     try {
       if (this.redis.status !== 'ready' && this.redis.status !== 'connecting') {
         await this.redis.connect();

@@ -9,6 +9,7 @@ import { EventsModule } from '../events/events.module';
     BullModule.forRootAsync({
       useFactory: () => {
         const isDev = process.env.NODE_ENV === 'development';
+        const hasRedisEnv = !!(process.env.REDIS_URL || process.env.REDIS_HOST);
         const connectionOptions = {
           maxRetriesPerRequest: null,
           enableOfflineQueue: false,
@@ -25,12 +26,24 @@ import { EventsModule } from '../events/events.module';
             },
           };
         }
+        if (hasRedisEnv || isDev) {
+          return {
+            connection: {
+              host: process.env.REDIS_HOST || 'localhost',
+              port: Number(process.env.REDIS_PORT) || 6379,
+              password: process.env.REDIS_PASSWORD || undefined,
+              ...connectionOptions,
+            },
+          };
+        }
         return {
           connection: {
-            host: process.env.REDIS_HOST || 'localhost',
-            port: Number(process.env.REDIS_PORT) || 6379,
-            password: process.env.REDIS_PASSWORD || undefined,
-            ...connectionOptions,
+            host: '127.0.0.1',
+            port: 6379,
+            lazyConnect: true,
+            maxRetriesPerRequest: null,
+            enableOfflineQueue: false,
+            retryStrategy: () => null,
           },
         };
       },
