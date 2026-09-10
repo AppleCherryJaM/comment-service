@@ -26,8 +26,18 @@ async function bootstrap() {
         return callback(null, true);
       }
 
+      // If CORS_ORIGINS is omitted or '*' allow all origins
+      if (!corsOriginsEnv || corsOriginsEnv === '*' || configuredOrigins.includes('*')) {
+        return callback(null, true);
+      }
+
       // Allow explicitly configured origins from environment
       if (configuredOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow any Render deployment domain dynamically (*.onrender.com)
+      if (/\.onrender\.com$/.test(origin)) {
         return callback(null, true);
       }
 
