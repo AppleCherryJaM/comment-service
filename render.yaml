@@ -26,7 +26,6 @@ services:
   - type: web
     name: comments-client
     env: static
-    region: frankfurt
     plan: free
     rootDir: client
     buildCommand: npm install && npm run build
@@ -39,6 +38,5 @@ services:
 databases:
   - name: comments-postgres
     databaseName: comments_db
-    user: postgres
     region: frankfurt
     plan: free
