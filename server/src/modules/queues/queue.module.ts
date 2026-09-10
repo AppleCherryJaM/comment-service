@@ -8,10 +8,20 @@ import { EventsModule } from '../events/events.module';
   imports: [
     BullModule.forRootAsync({
       useFactory: () => {
+        const isDev = process.env.NODE_ENV === 'development';
+        const connectionOptions = {
+          maxRetriesPerRequest: null,
+          enableOfflineQueue: false,
+          retryStrategy: isDev
+            ? () => null
+            : (times: number) => Math.min(times * 500, 5000),
+        };
+
         if (process.env.REDIS_URL) {
           return {
             connection: {
               url: process.env.REDIS_URL,
+              ...connectionOptions,
             },
           };
         }
@@ -20,6 +30,7 @@ import { EventsModule } from '../events/events.module';
             host: process.env.REDIS_HOST || 'localhost',
             port: Number(process.env.REDIS_PORT) || 6379,
             password: process.env.REDIS_PASSWORD || undefined,
+            ...connectionOptions,
           },
         };
       },

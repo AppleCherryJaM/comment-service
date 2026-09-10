@@ -21,6 +21,11 @@ services:
         fromDatabase:
           name: comments-postgres
           property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: kv
+          name: comments-redis
+          property: connectionString
 
   # React Static Site (Frontend)
   - type: web
@@ -38,4 +43,8 @@ databases:
   - name: comments-postgres
     databaseName: comments_db
     region: frankfurt
+    plan: free
+
+kv:
+  - name: comments-redis
     plan: free
